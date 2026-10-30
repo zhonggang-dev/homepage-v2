@@ -1,0 +1,15 @@
+/* Injected by scripts/build_viewer_bundle.py: the article embeds the viewer in a
+   fixed-height iframe, so the viewer's own shell bar and its 49px offset are
+   removed. The canvas keeps the whole iframe. */
+body.sv-embedded { overflow: hidden; }
+body.sv-embedded header.topbar { display: none !important; }
+body.sv-embedded #viewer,
+body.sv-embedded #gl,
+body.sv-embedded #scene { top: 0 !important; height: 100vh !important; }
+body.sv-embedded #view-toggle,
+body.sv-embedded #progress,
+body.sv-embedded #viewpresets { top: 8px !important; }
+body.sv-embedded #controls { top: 8px !important; max-height: calc(100vh - 16px) !important; }
+body.sv-embedded #selection { top: 8px !important; }
+body.sv-embedded .cutaway-panel { display: none !important; }
+body.sv-embedded #sv-snapshot-btn { display: none !important; }

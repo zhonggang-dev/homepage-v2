@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+.venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+Thumbs.db
+
+# Logs
+*.log
+
+# Temp files
+temp/
+*.tmp
+
+# Build artifacts (repo root only; vendored viewer bundles keep their build/ and dist/)
+*.egg-info/
+/dist/
+/build/
+
+# Zip files
+*.zip
+
+# Local dev tools and brand asset copies (not part of deployment)
+test_method/
+brand-assets/
+
+# Deployment artifacts and credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+/release.json
+/*.tar.gz

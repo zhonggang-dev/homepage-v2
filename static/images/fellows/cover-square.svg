@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" width="1000" height="1000">
+  <!-- Placeholder cover for UniPat Fellows. Replace with the final design export. -->
+  <defs>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="60"/></filter>
+    <filter id="mid" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="22"/></filter>
+    <filter id="edge"><feGaussianBlur stdDeviation="2.5"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.07 0"/></filter>
+    <linearGradient id="beam" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#0f6d70"/>
+      <stop offset="0.35" stop-color="#e2361a"/>
+      <stop offset="0.6" stop-color="#ff7a32"/>
+      <stop offset="0.85" stop-color="#ff4a1f"/>
+      <stop offset="1" stop-color="#ff9a5a"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffb07a"/>
+      <stop offset="0.45" stop-color="#ff5a24"/>
+      <stop offset="1" stop-color="#14686b"/>
+    </linearGradient>
+    <radialGradient id="glass" cx="0.45" cy="0.42" r="0.6">
+      <stop offset="0" stop-color="#0b0d10" stop-opacity="0.15"/>
+      <stop offset="0.8" stop-color="#050608" stop-opacity="0.75"/>
+      <stop offset="1" stop-color="#ff6a2c" stop-opacity="0.5"/>
+    </radialGradient>
+    <clipPath id="lens"><circle cx="560" cy="440" r="230"/></clipPath>
+  </defs>
+
+  <rect width="1000" height="1000" fill="#06080b"/>
+  <ellipse cx="120" cy="900" rx="460" ry="340" fill="#0c5458" opacity="0.55" filter="url(#soft)"/>
+
+  <g transform="rotate(-52 500 500)">
+    <rect x="-400" y="420" width="1800" height="200" fill="url(#beam)" opacity="0.8" filter="url(#soft)"/>
+    <rect x="-400" y="480" width="1800" height="80" fill="url(#beam)" filter="url(#mid)"/>
+    <line x1="-400" y1="410" x2="1400" y2="410" stroke="#ffffff" stroke-opacity="0.2" stroke-width="1.2"/>
+  </g>
+
+  <g transform="rotate(-52 500 500)">
+    <rect x="80" y="455" width="330" height="96" rx="48" fill="#120b08" opacity="0.85"/>
+    <rect x="80" y="455" width="330" height="96" rx="48" fill="none" stroke="#ff6a2c" stroke-opacity="0.55" stroke-width="5" filter="url(#edge)"/>
+  </g>
+
+  <g clip-path="url(#lens)">
+    <circle cx="560" cy="440" r="230" fill="#050608"/>
+    <g transform="rotate(-64 560 440)">
+      <rect x="160" y="340" width="800" height="220" fill="url(#beam)" filter="url(#mid)"/>
+    </g>
+    <circle cx="560" cy="440" r="230" fill="url(#glass)"/>
+  </g>
+  <circle cx="560" cy="440" r="230" fill="none" stroke="url(#ring)" stroke-width="16" filter="url(#edge)"/>
+  <circle cx="560" cy="440" r="244" fill="none" stroke="#0b0d10" stroke-width="10" opacity="0.8"/>
+
+  <circle cx="560" cy="460" r="112" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.2"/>
+  <circle cx="370" cy="760" r="76" fill="none" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.2"/>
+  <path d="M 520 1000 Q 700 820 1000 780" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.2"/>
+  <circle cx="920" cy="764" r="6" fill="#ffffff"/>
+
+  <g font-family="Copperplate, 'Copperplate Gothic Light', 'Cinzel', Georgia, serif" font-weight="700" fill="#ffffff" letter-spacing="2">
+    <text x="110" y="330" font-size="96">U<tspan font-size="74">NIPAT</tspan></text>
+    <text x="110" y="450" font-size="96">F<tspan font-size="74">ELLOWS</tspan></text>
+  </g>
+
+  <rect width="1000" height="1000" filter="url(#grain)"/>
+</svg>

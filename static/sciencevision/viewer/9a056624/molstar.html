@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Mol* viewer — Science Vision</title>
+<link rel="stylesheet" href="/static/sciencevision/viewer/9a056624/shared/style.css">
+<script src="/static/sciencevision/viewer/9a056624/shared/capture/annotate-shell.js" type="module"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/screenshot-api.js"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/viewer-mcp-api.js"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/molstar-mcp-adapter.js"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/scalebar.js"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/scalebar-molstar.js"></script>
+<script src="/static/sciencevision/viewer/9a056624/shared/snapshot-sidecar.js"></script>
+<link rel="stylesheet" href="/static/sciencevision/viewer/9a056624/shared/vendor/molstar/4.5.0/build/viewer/molstar.css">
+<link rel="preload" as="script" href="/static/sciencevision/viewer/9a056624/shared/vendor/molstar/4.5.0/build/viewer/molstar.js">
+<style>
+  #viewer { width: 100vw; height: calc(100vh - 49px); position: fixed; top: 49px; left: 0; }
+  /* Multi-structure legend: which ids are in the scene, in load order. */
+  #legend { position: fixed; bottom: 10px; left: 50%; transform: translateX(-50%);
+            z-index: 30; display: flex; gap: 12px; align-items: baseline;
+            padding: 6px 12px; border-radius: 6px; pointer-events: none;
+            background: rgba(20, 20, 20, .82); color: #eee;
+            font: 12px/1.4 ui-monospace, Menlo, Consolas, monospace; }
+  #legend b { font-weight: 600; color: #9ad; text-transform: uppercase; letter-spacing: .04em; }
+</style>
+<link rel="stylesheet" href="/static/sciencevision/viewer/9a056624/embed.css">
+</head>
+<body>
+<script src="/static/sciencevision/viewer/9a056624/embed.js"></script>
+<header class="topbar">
+  <div><a class="back" href="/static/sciencevision/viewer/9a056624/">← Shell</a><strong>Mol*</strong> <span id="filename" class="meta"></span></div>
+  <div class="meta">PDB / mmCIF / SDF / MOL2</div>
+</header>
+<div id="viewer"></div>
+<div id="legend" hidden></div>
+<script src="/static/sciencevision/viewer/9a056624/shared/vendor/molstar/4.5.0/build/viewer/molstar.js"></script>
+<script type="module">
+  import {
+    molstarFormatFor,
+    molstarIsBinaryFor,
+    parseMolstarQuery,
+  } from '/static/sciencevision/viewer/9a056624/shared/molstar-query.mjs';
+
+  const params = new URLSearchParams(location.search);
+  const root = document.getElementById('viewer');
+  const screenshotProvider = window.__ScienceVisionScreenshotProvider;
+  const mcpProvider = window.__ScienceVisionViewerMCPProvider;
+  // Expert review embeds this page in a narrow iframe, where Mol*'s side panels
+  // and sequence bar leave almost nothing for the structure itself.
+  const embedded = params.get('embed') === 'expert' || params.get('embed') === 'blog';
+
+  function showError(message) {
+    const errorBox = document.createElement('div');
+    errorBox.className = 'error-box';
+    errorBox.textContent = message;
+    root.replaceChildren(errorBox);
+  }
+
+  async function captureFullViewport(helper) {
+    const previousCropParams = { ...helper.cropParams };
+    const previousRelativeCrop = { ...helper.relativeCrop };
+    try {
+      helper.behaviors.cropParams.next({ ...previousCropParams, auto: false });
+      helper.behaviors.relativeCrop.next({ x: 0, y: 0, width: 1, height: 1 });
+      return await helper.getImageDataUri();
+    } finally {
+      helper.behaviors.relativeCrop.next(previousRelativeCrop);
+      helper.behaviors.cropParams.next(previousCropParams);
+    }
+  }
+
+  // Multi-structure support (B3 bio_multi_structure_compare): load 2+ structures
+  // into one scene. molstar-query.mjs owns the two ?files= grammars — a JSON
+  // array of {file,type} (what the expert review app emits) and the legacy
+  // comma-separated list paired with ?types= — plus the same-origin and
+  // structure-count limits. Single-file ?file=&type= is unchanged.
+  let structures = null;
+  let parseError = null;
+  try {
+    structures = parseMolstarQuery(location.search, location.origin).files;
+  } catch (error) {
+    parseError = error;
+  }
+
+  // Root-relative form of a loaded structure. The sidecar and the MCP provider
+  // report this rather than the resolved href, so a snapshot stays resolvable on
+  // a host other than the one it was taken on.
+  const assetPath = url => new URL(url).pathname;
+  const displayName = url => assetPath(url).split('/').filter(Boolean).pop() || '/';
+
+  // Structure id shown to the user = the asset's file stem (10BT.cif -> 10BT),
+  // which is what the multi-structure tasks expect to be reported back.
+  const structureIds = (structures || []).map(
+    item => displayName(item.url).replace(/\.(cif|bcif|pdb|ent|sdf|mol2?|xyz)$/i, ''));
+
+  // Ordered legend of everything in the scene, so a structure in the viewport
+  // can be traced back to its id. Only rendered on the multi-structure path.
+  function showLegend() {
+    const box = document.getElementById('legend');
+    const heading = document.createElement('b');
+    heading.textContent = 'structures in scene';
+    const entries = structureIds.map((id, index) => {
+      const entry = document.createElement('span');
+      entry.textContent = `${index + 1}. ${id}`;
+      return entry;
+    });
+    box.replaceChildren(heading, ...entries);
+    box.hidden = false;
+  }
+
+  const nameLabel = !structures
+    ? '(no file)'
+    : structures.length === 1
+      ? displayName(structures[0].url) + '  ·  fmt=' + structures[0].format
+      : structures.length + ' structures  ·  ' + structures.map(item => displayName(item.url)).join(', ');
+  document.getElementById('filename').textContent = nameLabel;
+
+  if (parseError) {
+    showError(parseError.message);
+    screenshotProvider.fail(parseError);
+    mcpProvider.fail(parseError);
+  } else if (!window.molstar?.Viewer) {
+    const error = new Error('Mol* failed to load.');
+    showError(error.message);
+    screenshotProvider.fail(error);
+    mcpProvider.fail(error);
+  } else {
+    window.molstar.Viewer.create('viewer', {
+      layoutIsExpanded: false,
+      layoutShowControls: true,
+      layoutShowSequence: !embedded,
+      collapseLeftPanel: embedded,
+      collapseRightPanel: embedded,
+      layoutShowLog: false,
+      layoutShowRemoteState: false,
+      viewportShowExpand: true,
+      viewportShowSelectionMode: true,
+      pdbProvider: 'rcsb',
+      disabledExtensions: ['volseg'],
+    }).then(async viewer => {
+      if (params.get('annotate')) window.__sv_viewer = viewer;
+
+      if (structures.length === 1) {
+        await viewer.loadStructureFromUrl(
+          structures[0].url,
+          molstarFormatFor(structures[0].format),
+          molstarIsBinaryFor(structures[0].format),
+        );
+      } else {
+        // Multi-structure: append each structure to one scene in task order.
+        // Labelling each download keeps the legend's ids attached to the tree.
+        const plugin = viewer.plugin;
+        for (let i = 0; i < structures.length; i++) {
+          const data = await plugin.builders.data.download(
+            {
+              url: structures[i].url,
+              isBinary: molstarIsBinaryFor(structures[i].format),
+              label: structureIds[i],
+            },
+            { state: { isGhost: false } });
+          const traj = await plugin.builders.structure.parseTrajectory(
+            data, molstarFormatFor(structures[i].format));
+          await plugin.builders.structure.hierarchy.applyPreset(traj, 'default');
+        }
+        showLegend();
+      }
+      const sources = structures.map(item => ({
+        url: assetPath(item.url),
+        format: item.format,
+      }));
+      // After the structures load: the bar measures against the camera, and the
+      // camera is only framed on something once there is something to frame.
+      window.ScienceVisionInstallMolstarScaleBar(viewer); window.__svPostReady?.();
+      // Extra sidecar fields for snapshot-sidecar.js — enough to re-frame this
+      // exact view, which an Angstrom reading is meaningless without.
+      window.__svSnapshotMeta = () => {
+        const snapshot = viewer.plugin?.canvas3d?.camera?.getSnapshot?.();
+        return {
+          view_mode: 'structure',
+          structures: sources,
+          camera: snapshot ? {
+            mode: snapshot.mode,
+            fov: snapshot.fov,
+            position: Array.from(snapshot.position, Number),
+            target: Array.from(snapshot.target, Number),
+            up: Array.from(snapshot.up, Number),
+          } : null,
+        };
+      };
+      // The solver-facing MCP bridge deliberately receives no asset provenance.
+      // `sources` remains trusted-host snapshot metadata only.
+      mcpProvider.ready(window.__ScienceVisionCreateMolstarMCPProvider(viewer));
+      screenshotProvider.ready(async () => {
+        const helper = viewer.plugin.helpers?.viewportScreenshot;
+        if (helper?.getImageDataUri && helper.behaviors?.cropParams?.next
+            && helper.behaviors?.relativeCrop?.next) {
+          return captureFullViewport(helper);
+        }
+        const canvas = root.querySelector('canvas');
+        if (!canvas || !canvas.width || !canvas.height) {
+          throw new Error('Mol* render canvas is unavailable.');
+        }
+        return new Promise((resolve, reject) => {
+          canvas.toBlob(blob => {
+            if (blob) resolve(blob);
+            else reject(new Error('Mol* could not encode its render canvas.'));
+          }, 'image/png');
+        });
+      });
+    })
+      .catch(err => {
+        screenshotProvider.fail(err);
+        mcpProvider.fail(err);
+        showError(`Failed to load ${structures.length} structure(s):\n${err}`);
+      });
+  }
+</script>
+</body>
+</html>

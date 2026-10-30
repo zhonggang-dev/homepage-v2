@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block page_title %}Benchmarks · UniPat AI{% endblock %}
+{% block meta_description %}Executable, expert-designed benchmarks from UniPat AI across coding, computer use, science, vision and prediction.{% endblock %}
+{% block og_title %}Benchmarks · UniPat AI{% endblock %}
+
+{% block content %}
+{% set domains = entries | map(attribute='meta') | map(attribute='domain') | select | unique | list %}
+<section class="phero" data-scene data-shape="bars" data-fx=".72" data-fy=".52">
+    <div class="wrap"><div class="col">
+        <span class="mono">Benchmarks</span>
+        <h1 data-split>Define the frontier and <span class="soft">track the acceleration.</span></h1>
+        <p>Executable, expert-designed evaluations built from real work—so progress is measured where it matters.</p>
+        <div class="count">
+            <div><b>{{ entries | length }}</b><span class="mono">Benchmarks</span></div>
+            <div><b>{{ domains | length }}</b><span class="mono">Domains</span></div>
+        </div>
+    </div></div>
+</section>
+
+<section class="section" id="index" data-scene data-shape="sphere" data-fx=".5" data-fy=".55" data-fs="1.9" data-fa=".28">
+    <div class="wrap">
+        <div class="section-head">
+            <div class="chips" role="group" aria-label="Filter by domain">
+                <button class="chip" type="button" data-domain="" aria-pressed="true">All<span>{{ entries | length }}</span></button>
+                {% for d in domains | sort %}
+                <button class="chip" type="button" data-domain="{{ d }}" aria-pressed="false">{{ d }}<span>{{ entries | selectattr('meta.domain', 'equalto', d) | list | length }}</span></button>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="btable" data-stagger>
+            {% for entry in entries %}
+            {% set ext = entry.meta.get('externalurl') %}
+            <a class="brow2" data-reveal data-domain="{{ entry.meta.get('domain', '') }}" href="{{ ext or url_for('benchmarks_detail', slug=entry.slug) }}"{% if ext %} target="_blank" rel="noopener"{% endif %}>
+                <div class="img"><img src="{{ entry.header_image }}" alt="" loading="lazy"></div>
+                <div>
+                    <h3>{{ entry.title }}</h3>
+                    {% if entry.summary %}<p>{{ entry.summary }}</p>{% endif %}
+                </div>
+                <span class="mono dom">{{ entry.meta.get('domain', '') }}</span>
+                <span class="go" aria-hidden="true">{% if ext %}↗{% else %}→{% endif %}</span>
+            </a>
+            {% else %}
+            <p class="empty">No benchmarks yet. Add Markdown files in <code>content/benchmarks</code>.</p>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+    var chips = document.querySelectorAll('.chip'), rows = document.querySelectorAll('.brow2');
+    chips.forEach(function (c) {
+        c.addEventListener('click', function () {
+            var d = c.dataset.domain;
+            chips.forEach(function (x) { x.setAttribute('aria-pressed', String(x === c)); });
+            var n = 0;
+            rows.forEach(function (r) {
+                var show = !d || r.dataset.domain === d;
+                r.classList.toggle('is-out', !show);
+                if (show) {
+                    // replay the rise so the filtered set visibly re-forms
+                    r.classList.remove('is-in'); r.style.setProperty('--si', n++ % 8);
+                    requestAnimationFrame(function () { requestAnimationFrame(function () { r.classList.add('is-in'); }); });
+                }
+            });
+        });
+    });
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 760" font-family="Helvetica,Arial,sans-serif">
+<path d="M450.00 136.00 A236 236 0 0 1 488.80 139.21 L476.63 212.20 A162 162 0 0 0 450.00 210.00 Z" fill="#7cc5be" stroke="#fff" stroke-width="1"/>
+<text x="469.96" y="130.82" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-85.27 469.96 130.82)" dominant-baseline="middle">Algorithm / DS viz</text>
+<path d="M488.80 139.21 A236 236 0 0 1 521.72 147.16 L499.23 217.66 A162 162 0 0 0 476.63 212.20 Z" fill="#a3d6d1" stroke="#fff" stroke-width="1"/>
+<text x="506.81" y="136.76" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-76.42 506.81 136.76)" dominant-baseline="middle">DB clients</text>
+<path d="M521.72 147.16 A236 236 0 0 1 553.16 159.74 L520.81 226.30 A162 162 0 0 0 499.23 217.66 Z" fill="#7cc5be" stroke="#fff" stroke-width="1"/>
+<text x="539.89" y="147.32" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-68.19 539.89 147.32)" dominant-baseline="middle">API testing</text>
+<path d="M553.16 159.74 A236 236 0 0 1 576.81 172.97 L537.05 235.37 A162 162 0 0 0 520.81 226.30 Z" fill="#a3d6d1" stroke="#fff" stroke-width="1"/>
+<text x="568.10" y="160.78" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-60.79 568.10 160.78)" dominant-baseline="middle">Git / code review</text>
+<path d="M576.81 172.97 A236 236 0 0 1 598.79 188.82 L552.14 246.26 A162 162 0 0 0 537.05 235.37 Z" fill="#7cc5be" stroke="#fff" stroke-width="1"/>
+<text x="591.54" y="175.71" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-54.21 591.54 175.71)" dominant-baseline="middle">Observability / APM</text>
+<path d="M598.79 188.82 A236 236 0 0 1 615.22 203.48 L563.41 256.32 A162 162 0 0 0 552.14 246.26 Z" fill="#a3d6d1" stroke="#fff" stroke-width="1"/>
+<text x="611.17" y="191.48" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-48.24 611.17 191.48)" dominant-baseline="middle">Coding sandbox</text>
+<path d="M615.22 203.48 A236 236 0 0 1 629.11 218.33 L572.95 266.51 A162 162 0 0 0 563.41 256.32 Z" fill="#7cc5be" stroke="#fff" stroke-width="1"/>
+<text x="626.71" y="206.66" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-43.10 626.71 206.66)" dominant-baseline="middle">Build / CI</text>
+<path d="M629.11 218.33 A236 236 0 0 1 640.68 232.94 L580.89 276.54 A162 162 0 0 0 572.95 266.51 Z" fill="#a3d6d1" stroke="#fff" stroke-width="1"/>
+<text x="639.74" y="221.80" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-38.37 639.74 221.80)" dominant-baseline="middle">CLI tools</text>
+<path d="M640.68 232.94 A236 236 0 0 1 649.26 245.54 L586.78 285.20 A162 162 0 0 0 580.89 276.54 Z" fill="#7cc5be" stroke="#fff" stroke-width="1"/>
+<text x="650.03" y="235.80" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-34.25 650.03 235.80)" dominant-baseline="middle">Dev tooling</text>
+<path d="M649.26 245.54 A236 236 0 0 1 655.36 255.72 L590.97 292.18 A162 162 0 0 0 586.78 285.20 Z" fill="#a3d6d1" stroke="#fff" stroke-width="1"/>
+<text x="657.52" y="247.51" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-30.96 657.52 247.51)" dominant-baseline="middle">Sysadmin / automation</text>
+<path d="M450.00 210.00 A162 162 0 0 1 590.97 292.18 L519.61 332.58 A80 80 0 0 0 450.00 292.00 Z" fill="#259e93" stroke="#fff" stroke-width="1.5"/>
+<text x="510.94" y="263.47" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Dev / DevOps</text>
+<text x="510.94" y="276.47" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">16.8%</text>
+<path d="M655.36 255.72 A236 236 0 0 1 676.92 307.18 L605.77 327.50 A162 162 0 0 0 590.97 292.18 Z" fill="#9f9bf0" stroke="#fff" stroke-width="1"/>
+<text x="673.20" y="278.49" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-22.73 673.20 278.49)" dominant-baseline="middle">Card / strategy</text>
+<path d="M676.92 307.18 A236 236 0 0 1 683.39 336.97 L610.21 347.95 A162 162 0 0 0 605.77 327.50 Z" fill="#bcb8f5" stroke="#fff" stroke-width="1"/>
+<text x="686.50" y="320.69" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-12.24 686.50 320.69)" dominant-baseline="middle">Rhythm games</text>
+<path d="M683.39 336.97 A236 236 0 0 1 685.72 360.57 L611.81 364.15 A162 162 0 0 0 610.21 347.95 Z" fill="#9f9bf0" stroke="#fff" stroke-width="1"/>
+<text x="690.82" y="348.14" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-5.66 690.82 348.14)" dominant-baseline="middle">Physics sandbox</text>
+<path d="M685.72 360.57 A236 236 0 0 1 685.94 377.51 L611.96 375.78 A162 162 0 0 0 611.81 364.15 Z" fill="#bcb8f5" stroke="#fff" stroke-width="1"/>
+<text x="691.98" y="368.96" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(-0.72 691.98 368.96)" dominant-baseline="middle">FPS / 3D engine</text>
+<path d="M685.94 377.51 A236 236 0 0 1 685.09 392.73 L611.37 386.23 A162 162 0 0 0 611.96 375.78 Z" fill="#9f9bf0" stroke="#fff" stroke-width="1"/>
+<text x="691.63" y="385.46" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(3.19 691.63 385.46)" dominant-baseline="middle">Open-world / RPG</text>
+<path d="M685.09 392.73 A236 236 0 0 1 683.51 406.20 L610.29 395.47 A162 162 0 0 0 611.37 386.23 Z" fill="#bcb8f5" stroke="#fff" stroke-width="1"/>
+<text x="690.35" y="400.17" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(6.69 690.35 400.17)" dominant-baseline="middle">Games (misc)</text>
+<path d="M590.97 292.18 A162 162 0 0 1 610.29 395.47 L529.16 383.59 A80 80 0 0 0 519.61 332.58 Z" fill="#6058e7" stroke="#fff" stroke-width="1.5"/>
+<text x="568.94" y="345.75" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Games</text>
+<text x="568.94" y="358.75" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">10.5%</text>
+<path d="M683.51 406.20 A236 236 0 0 1 675.72 440.89 L604.94 419.29 A162 162 0 0 0 610.29 395.47 Z" fill="#b894f5" stroke="#fff" stroke-width="1"/>
+<text x="686.12" y="425.00" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(12.65 686.12 425.00)" dominant-baseline="middle">CAD / drafting</text>
+<path d="M675.72 440.89 A236 236 0 0 1 663.54 472.48 L596.58 440.98 A162 162 0 0 0 604.94 419.29 Z" fill="#cdb4f8" stroke="#fff" stroke-width="1"/>
+<text x="675.80" y="459.06" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(21.09 675.80 459.06)" dominant-baseline="middle">3D modeling</text>
+<path d="M663.54 472.48 A236 236 0 0 1 648.81 499.17 L586.47 459.29 A162 162 0 0 0 596.58 440.98 Z" fill="#b894f5" stroke="#fff" stroke-width="1"/>
+<text x="661.86" y="488.96" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(28.90 661.86 488.96)" dominant-baseline="middle">3D rendering</text>
+<path d="M648.81 499.17 A236 236 0 0 1 632.92 521.12 L575.56 474.36 A162 162 0 0 0 586.47 459.29 Z" fill="#cdb4f8" stroke="#fff" stroke-width="1"/>
+<text x="646.04" y="513.89" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(35.90 646.04 513.89)" dominant-baseline="middle">Pixel / animation</text>
+<path d="M632.92 521.12 A236 236 0 0 1 620.58 535.09 L567.09 483.95 A162 162 0 0 0 575.56 474.36 Z" fill="#b894f5" stroke="#fff" stroke-width="1"/>
+<text x="631.38" y="532.20" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(41.45 631.38 532.20)" dominant-baseline="middle">Creative design</text>
+<path d="M610.29 395.47 A162 162 0 0 1 567.09 483.95 L507.82 427.29 A80 80 0 0 0 529.16 383.59 Z" fill="#894dee" stroke="#fff" stroke-width="1.5"/>
+<text x="558.73" y="421.09" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Creative 3D</text>
+<text x="558.73" y="434.09" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">9.8%</text>
+<path d="M620.58 535.09 A236 236 0 0 1 592.80 559.90 L548.02 500.98 A162 162 0 0 0 567.09 483.95 Z" fill="#81cd9d" stroke="#fff" stroke-width="1"/>
+<text x="611.17" y="552.52" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(48.24 611.17 552.52)" dominant-baseline="middle">Trading / quant</text>
+<path d="M592.80 559.90 A236 236 0 0 1 564.44 578.40 L528.55 513.68 A162 162 0 0 0 548.02 500.98 Z" fill="#a6dcba" stroke="#fff" stroke-width="1"/>
+<text x="582.23" y="574.68" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(56.88 582.23 574.68)" dominant-baseline="middle">Budgeting</text>
+<path d="M564.44 578.40 A236 236 0 0 1 535.30 592.05 L508.55 523.05 A162 162 0 0 0 528.55 513.68 Z" fill="#81cd9d" stroke="#fff" stroke-width="1"/>
+<text x="552.65" y="591.15" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(64.90 552.65 591.15)" dominant-baseline="middle">E-commerce / POS</text>
+<path d="M535.30 592.05 A236 236 0 0 1 506.23 601.20 L488.60 529.34 A162 162 0 0 0 508.55 523.05 Z" fill="#a6dcba" stroke="#fff" stroke-width="1"/>
+<text x="522.71" y="602.82" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(72.51 522.71 602.82)" dominant-baseline="middle">Market charts</text>
+<path d="M506.23 601.20 A236 236 0 0 1 484.62 605.45 L473.76 532.25 A162 162 0 0 0 488.60 529.34 Z" fill="#81cd9d" stroke="#fff" stroke-width="1"/>
+<text x="496.63" y="609.47" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(78.89 496.63 609.47)" dominant-baseline="middle">CRM / ERP</text>
+<path d="M567.09 483.95 A162 162 0 0 1 473.76 532.25 L461.73 451.13 A80 80 0 0 0 507.82 427.29 Z" fill="#2dac5c" stroke="#fff" stroke-width="1.5"/>
+<text x="505.61" y="475.46" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Finance</text>
+<text x="505.61" y="488.46" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">10.5%</text>
+<path d="M484.62 605.45 A236 236 0 0 1 452.54 607.99 L451.74 533.99 A162 162 0 0 0 473.76 532.25 Z" fill="#79c3d5" stroke="#fff" stroke-width="1"/>
+<text x="469.10" y="613.25" font-size="8.2" fill="#374151" text-anchor="start" transform="rotate(85.47 469.10 613.25)" dominant-baseline="middle">Spreadsheets</text>
+<path d="M452.54 607.99 A236 236 0 0 1 427.16 606.89 L434.32 533.24 A162 162 0 0 0 451.74 533.99 Z" fill="#a1d5e1" stroke="#fff" stroke-width="1"/>
+<text x="439.58" y="613.78" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(272.47 439.58 613.78)" dominant-baseline="middle">Symbolic math</text>
+<path d="M427.16 606.89 A236 236 0 0 1 403.70 603.41 L418.22 530.85 A162 162 0 0 0 434.32 533.24 Z" fill="#79c3d5" stroke="#fff" stroke-width="1"/>
+<text x="414.50" y="611.38" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(278.43 414.50 611.38)" dominant-baseline="middle">Sci / eng viz</text>
+<path d="M403.70 603.41 A236 236 0 0 1 380.71 597.60 L402.43 526.86 A162 162 0 0 0 418.22 530.85 Z" fill="#a1d5e1" stroke="#fff" stroke-width="1"/>
+<text x="390.66" y="606.61" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(284.19 390.66 606.61)" dominant-baseline="middle">ETL / pipelines</text>
+<path d="M380.71 597.60 A236 236 0 0 1 361.55 590.80 L389.28 522.19 A162 162 0 0 0 402.43 526.86 Z" fill="#79c3d5" stroke="#fff" stroke-width="1"/>
+<text x="369.05" y="600.06" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(289.54 369.05 600.06)" dominant-baseline="middle">Local LLM / RAG</text>
+<path d="M361.55 590.80 A236 236 0 0 1 343.05 582.37 L376.58 516.41 A162 162 0 0 0 389.28 522.19 Z" fill="#a1d5e1" stroke="#fff" stroke-width="1"/>
+<text x="349.72" y="592.25" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(294.48 349.72 592.25)" dominant-baseline="middle">Numeric notebooks</text>
+<path d="M343.05 582.37 A236 236 0 0 1 331.14 575.89 L368.41 511.96 A162 162 0 0 0 376.58 516.41 Z" fill="#79c3d5" stroke="#fff" stroke-width="1"/>
+<text x="334.18" y="584.48" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(298.59 334.18 584.48)" dominant-baseline="middle">Data viz</text>
+<path d="M473.76 532.25 A162 162 0 0 1 368.41 511.96 L409.71 441.11 A80 80 0 0 0 461.73 451.13 Z" fill="#209cb9" stroke="#fff" stroke-width="1.5"/>
+<text x="427.11" y="486.82" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Data / ML</text>
+<text x="427.11" y="499.82" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">10.7%</text>
+<path d="M331.14 575.89 A236 236 0 0 1 308.56 560.92 L352.91 501.68 A162 162 0 0 0 368.41 511.96 Z" fill="#ee849c" stroke="#fff" stroke-width="1"/>
+<text x="316.32" y="573.73" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(303.53 316.32 573.73)" dominant-baseline="middle">Audio FX / synth</text>
+<path d="M308.56 560.92 A236 236 0 0 1 287.83 543.46 L338.68 489.69 A162 162 0 0 0 352.91 501.68 Z" fill="#f3a9b9" stroke="#fff" stroke-width="1"/>
+<text x="294.08" y="557.07" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(310.11 294.08 557.07)" dominant-baseline="middle">Live overlays</text>
+<path d="M287.83 543.46 A236 236 0 0 1 273.68 528.86 L328.96 479.68 A162 162 0 0 0 338.68 489.69 Z" fill="#ee849c" stroke="#fff" stroke-width="1"/>
+<text x="276.29" y="540.49" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(315.87 276.29 540.49)" dominant-baseline="middle">Streaming / capture</text>
+<path d="M273.68 528.86 A236 236 0 0 1 262.88 515.81 L321.55 470.72 A162 162 0 0 0 328.96 479.68 Z" fill="#f3a9b9" stroke="#fff" stroke-width="1"/>
+<text x="263.54" y="526.26" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(320.40 263.54 526.26)" dominant-baseline="middle">Video transcode</text>
+<path d="M262.88 515.81 A236 236 0 0 1 253.98 503.42 L315.44 462.21 A162 162 0 0 0 321.55 470.72 Z" fill="#ee849c" stroke="#fff" stroke-width="1"/>
+<text x="253.45" y="513.19" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(324.31 253.45 513.19)" dominant-baseline="middle">Realtime voice</text>
+<path d="M253.98 503.42 A236 236 0 0 1 247.62 493.41 L311.08 455.34 A162 162 0 0 0 315.44 462.21 Z" fill="#f3a9b9" stroke="#fff" stroke-width="1"/>
+<text x="245.67" y="501.67" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(327.60 245.67 501.67)" dominant-baseline="middle">Media players</text>
+<path d="M247.62 493.41 A236 236 0 0 1 242.58 484.58 L307.62 449.28 A162 162 0 0 0 311.08 455.34 Z" fill="#ee849c" stroke="#fff" stroke-width="1"/>
+<text x="239.85" y="492.00" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(330.27 239.85 492.00)" dominant-baseline="middle">Audio recognition</text>
+<path d="M368.41 511.96 A162 162 0 0 1 307.62 449.28 L379.69 410.16 A80 80 0 0 0 409.71 441.11 Z" fill="#e4335a" stroke="#fff" stroke-width="1.5"/>
+<text x="363.14" y="452.24" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Media</text>
+<text x="363.14" y="465.24" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">8.7%</text>
+<path d="M242.58 484.58 A236 236 0 0 1 221.52 431.10 L293.16 412.57 A162 162 0 0 0 307.62 449.28 Z" fill="#eab578" stroke="#fff" stroke-width="1"/>
+<text x="224.83" y="460.68" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(338.50 224.83 460.68)" dominant-baseline="middle">Healthcare</text>
+<path d="M221.52 431.10 A236 236 0 0 1 215.81 401.16 L289.24 392.02 A162 162 0 0 0 293.16 412.57 Z" fill="#f0cba0" stroke="#fff" stroke-width="1"/>
+<text x="212.29" y="417.35" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(349.20 212.29 417.35)" dominant-baseline="middle">Smart home / IoT</text>
+<path d="M215.81 401.16 A236 236 0 0 1 214.24 382.59 L288.16 379.27 A162 162 0 0 0 289.24 392.02 Z" fill="#eab578" stroke="#fff" stroke-width="1"/>
+<text x="208.86" y="392.39" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(355.17 208.86 392.39)" dominant-baseline="middle">Embedded / robotics</text>
+<path d="M214.24 382.59 A236 236 0 0 1 214.02 369.03 L288.01 369.96 A162 162 0 0 0 288.16 379.27 Z" fill="#f0cba0" stroke="#fff" stroke-width="1"/>
+<text x="208.03" y="375.91" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(359.07 208.03 375.91)" dominant-baseline="middle">Wearables / biosignals</text>
+<path d="M214.02 369.03 A236 236 0 0 1 214.20 362.26 L288.14 365.31 A162 162 0 0 0 288.01 369.96 Z" fill="#eab578" stroke="#fff" stroke-width="1"/>
+<text x="208.09" y="365.48" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(361.54 208.09 365.48)" dominant-baseline="middle">Wellness</text>
+<path d="M307.62 449.28 A162 162 0 0 1 288.14 365.31 L370.07 368.70 A80 80 0 0 0 379.69 410.16 Z" fill="#dc841e" stroke="#fff" stroke-width="1.5"/>
+<text x="332.13" y="395.35" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Health / IoT</text>
+<text x="332.13" y="408.35" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">8.6%</text>
+<path d="M214.20 362.26 A236 236 0 0 1 216.61 336.97 L289.79 347.95 A162 162 0 0 0 288.14 365.31 Z" fill="#9ba3ae" stroke="#fff" stroke-width="1"/>
+<text x="209.09" y="349.01" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(365.45 209.09 349.01)" dominant-baseline="middle">Reverse engineering</text>
+<path d="M216.61 336.97 A236 236 0 0 1 221.73 312.08 L293.31 330.87 A162 162 0 0 0 289.79 347.95 Z" fill="#b9bec6" stroke="#fff" stroke-width="1"/>
+<text x="212.96" y="323.24" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(371.62 212.96 323.24)" dominant-baseline="middle">Crypto wallets</text>
+<path d="M221.73 312.08 A236 236 0 0 1 228.90 289.47 L298.23 315.35 A162 162 0 0 0 293.31 330.87 Z" fill="#9ba3ae" stroke="#fff" stroke-width="1"/>
+<text x="219.31" y="298.87" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(377.59 219.31 298.87)" dominant-baseline="middle">Password vaults</text>
+<path d="M228.90 289.47 A236 236 0 0 1 237.56 269.22 L304.17 301.45 A162 162 0 0 0 298.23 315.35 Z" fill="#b9bec6" stroke="#fff" stroke-width="1"/>
+<text x="227.47" y="276.89" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(383.14 227.47 276.89)" dominant-baseline="middle">Network forensics</text>
+<path d="M237.56 269.22 A236 236 0 0 1 248.06 249.87 L311.38 288.16 A162 162 0 0 0 304.17 301.45 Z" fill="#9ba3ae" stroke="#fff" stroke-width="1"/>
+<text x="237.31" y="256.56" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(388.49 237.31 256.56)" dominant-baseline="middle">Smart contracts</text>
+<path d="M288.14 365.31 A162 162 0 0 1 311.38 288.16 L381.55 330.60 A80 80 0 0 0 370.07 368.70 Z" fill="#596678" stroke="#fff" stroke-width="1.5"/>
+<text x="334.14" y="333.10" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Security</text>
+<text x="334.14" y="346.10" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">8.0%</text>
+<path d="M248.06 249.87 A236 236 0 0 1 265.49 224.86 L323.34 270.99 A162 162 0 0 0 311.38 288.16 Z" fill="#abcd7c" stroke="#fff" stroke-width="1"/>
+<text x="251.45" y="233.65" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(394.87 251.45 233.65)" dominant-baseline="middle">GIS / geospatial</text>
+<path d="M265.49 224.86 A236 236 0 0 1 284.78 203.48 L336.59 256.32 A162 162 0 0 0 323.34 270.99 Z" fill="#c4dca3" stroke="#fff" stroke-width="1"/>
+<text x="270.35" y="209.86" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(402.07 270.35 209.86)" dominant-baseline="middle">Logistics tracking</text>
+<path d="M284.78 203.48 A236 236 0 0 1 297.29 192.06 L345.18 248.48 A162 162 0 0 0 336.59 256.32 Z" fill="#abcd7c" stroke="#fff" stroke-width="1"/>
+<text x="286.89" y="193.23" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(407.62 286.89 193.23)" dominant-baseline="middle">Transit routing</text>
+<path d="M297.29 192.06 A236 236 0 0 1 309.23 182.58 L353.37 241.97 A162 162 0 0 0 345.18 248.48 Z" fill="#c4dca3" stroke="#fff" stroke-width="1"/>
+<text x="299.46" y="182.53" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(411.53 299.46 182.53)" dominant-baseline="middle">Maps / navigation</text>
+<path d="M311.38 288.16 A162 162 0 0 1 353.37 241.97 L402.28 307.79 A80 80 0 0 0 381.55 330.60 Z" fill="#74ac25" stroke="#fff" stroke-width="1.5"/>
+<text x="360.47" y="286.61" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Maps / Geo</text>
+<text x="360.47" y="299.61" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">6.2%</text>
+<path d="M309.23 182.58 A236 236 0 0 1 342.29 162.01 L376.07 227.86 A162 162 0 0 0 353.37 241.97 Z" fill="#76bce0" stroke="#fff" stroke-width="1"/>
+<text x="322.17" y="166.52" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(418.11 322.17 166.52)" dominant-baseline="middle">Full-stack apps</text>
+<path d="M342.29 162.01 A236 236 0 0 1 367.08 151.05 L393.08 220.33 A162 162 0 0 0 376.07 227.86 Z" fill="#9ed0e9" stroke="#fff" stroke-width="1"/>
+<text x="352.10" y="150.69" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(426.14 352.10 150.69)" dominant-baseline="middle">Messaging</text>
+<path d="M367.08 151.05 A236 236 0 0 1 391.31 143.41 L409.71 215.09 A162 162 0 0 0 393.08 220.33 Z" fill="#76bce0" stroke="#fff" stroke-width="1"/>
+<text x="377.29" y="141.18" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(432.51 377.29 141.18)" dominant-baseline="middle">PDF / docs</text>
+<path d="M391.31 143.41 A236 236 0 0 1 409.53 139.50 L422.22 212.40 A162 162 0 0 0 409.71 215.09 Z" fill="#9ed0e9" stroke="#fff" stroke-width="1"/>
+<text x="399.12" y="135.41" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(437.86 399.12 135.41)" dominant-baseline="middle">Mail / calendar</text>
+<path d="M409.53 139.50 A236 236 0 0 1 424.63 137.37 L432.58 210.94 A162 162 0 0 0 422.22 212.40 Z" fill="#76bce0" stroke="#fff" stroke-width="1"/>
+<text x="416.22" y="132.37" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(441.98 416.22 132.37)" dominant-baseline="middle">Notes / productivity</text>
+<path d="M424.63 137.37 A236 236 0 0 1 439.84 136.22 L443.02 210.15 A162 162 0 0 0 432.58 210.94 Z" fill="#9ed0e9" stroke="#fff" stroke-width="1"/>
+<text x="431.77" y="130.69" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(445.68 431.77 130.69)" dominant-baseline="middle">Social</text>
+<path d="M439.84 136.22 A236 236 0 0 1 450.00 136.00 L450.00 210.00 A162 162 0 0 0 443.02 210.15 Z" fill="#76bce0" stroke="#fff" stroke-width="1"/>
+<text x="444.79" y="130.06" font-size="8.2" fill="#374151" text-anchor="end" transform="rotate(448.77 444.79 130.06)" dominant-baseline="middle">Education</text>
+<path d="M353.37 241.97 A162 162 0 0 1 450.00 210.00 L450.00 292.00 A80 80 0 0 0 402.28 307.79 Z" fill="#1b90cc" stroke="#fff" stroke-width="1.5"/>
+<text x="411.99" y="253.13" font-size="10.5" font-weight="700" fill="#fff" text-anchor="middle" dominant-baseline="middle">Web / Comms</text>
+<text x="411.99" y="266.13" font-size="9.5" fill="#fff" text-anchor="middle" dominant-baseline="middle" opacity="0.92">10.2%</text>
+<text x="450" y="364" font-size="15" font-weight="700" fill="#0f172a" text-anchor="middle">10 areas</text>
+<text x="450" y="384" font-size="12" fill="#64748b" text-anchor="middle">61 sub-domains</text>
+</svg>

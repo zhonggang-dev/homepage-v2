@@ -1,0 +1,1676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230d1117'/%3E%3Cpath d='M2.5 12.5h11M3.5 12.5l4.5-9 4.5 9M5.6 9h4.8' stroke='%2358a6ff' stroke-width='1.3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Architecture inspection viewer — ScienceVision</title>
+<link rel="stylesheet" href="./shared/style.css">
+<link rel="modulepreload" href="/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/build/three.module.js">
+<link rel="modulepreload" href="/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/examples/jsm/controls/OrbitControls.js">
+<script type="importmap">
+{
+  "imports": {
+    "three": "/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/build/three.module.js",
+    "three/addons/": "/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  #scene { position: fixed; inset: 49px 0 0; width: 100vw; height: calc(100vh - 49px); display: block; }
+  #controls, #selection, #status {
+    position: fixed; z-index: 5; background: rgba(13,17,23,.94);
+    border: 1px solid var(--border); border-radius: 4px;
+    font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  #controls { top: 61px; left: 12px; width: 250px; max-height: calc(100vh - 96px); padding: 10px 12px; overflow: auto; }
+  #controls h2, #selection h2 { margin: 0 0 8px; font-size: 11px; color: #f0f6fc; }
+  .control-section { padding-bottom: 10px; margin-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .segmented, .command-row { display: grid; gap: 5px; }
+  .segmented { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .command-row { grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 6px; }
+  .segmented button, .command-row button {
+    min-width: 0; height: 28px; border: 1px solid var(--border); border-radius: 3px;
+    background: var(--bg); color: var(--fg-dim); cursor: pointer;
+    font: 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  .segmented button:hover, .command-row button:hover { border-color: #58a6ff; color: var(--fg); }
+  .segmented button[aria-pressed="true"], .command-row button[aria-pressed="true"] {
+    border-color: #58a6ff; background: rgba(88,166,255,.14); color: #b6ddff;
+  }
+  #layers { display: grid; gap: 5px; }
+  #layers label { display: flex; gap: 8px; align-items: center; color: var(--fg); }
+  #layers i { width: 9px; height: 9px; border-radius: 2px; display: inline-block; flex: 0 0 auto; }
+  #scene-tools { display: grid; gap: 8px; margin-top: 10px; }
+  .scene-tool { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; color: var(--fg-dim); }
+  .scene-tool small { color: #8b949e; font-size: 9px; }
+  .scene-tool input { grid-column: 1 / -1; width: 100%; accent-color: #58a6ff; }
+  .scene-tool output { color: #58a6ff; }
+  #evidence-note { display: grid; gap: 5px; margin-top: 8px; }
+  #evidence-note[hidden] { display: none; }
+  #evidence-note textarea { width: 100%; min-height: 48px; resize: vertical; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--fg); font: 10px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  #evidence-note button { height: 28px; border: 1px solid var(--border); border-radius: 3px; background: var(--bg); color: var(--fg-dim); cursor: pointer; font: 10px/1 ui-monospace, SFMono-Regular, Menlo, monospace; }
+  .metric-section { margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .metric-section h2 { margin-bottom: 2px !important; }
+  .metric-note { margin: 0 0 7px; color: #8b949e; font-size: 9px; }
+  .metric-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 3px 8px; margin: 0; }
+  .metric-grid dt { min-width: 0; color: var(--fg-dim); overflow-wrap: anywhere; }
+  .metric-grid dd { margin: 0; color: #f0f6fc; text-align: right; }
+  .metric-grid dd[data-metric="component"] { max-width: 128px; overflow-wrap: anywhere; }
+  #selection { top: 61px; right: 12px; width: min(320px, calc(100vw - 290px)); padding: 10px 12px; color: var(--fg-dim); }
+  #selection b { color: #f0f6fc; font-weight: 600; }
+  #status { left: 12px; bottom: 12px; max-width: min(760px, calc(100vw - 24px)); padding: 7px 10px; color: var(--fg-dim); }
+  #status strong { color: #58a6ff; }
+  #measure-status:not(:empty)::before { content: ' · '; color: var(--border); }
+  .synthetic { color: #ffb000; font-weight: 600; }
+  .review-only { color: #e3b341; }
+  #review-reveal {
+    margin-left: 7px; padding: 3px 7px; border: 1px solid #815c16; border-radius: 3px;
+    color: #e3b341; background: #0d1117; cursor: pointer; font: 10px/1.2 ui-monospace, monospace;
+  }
+  #review-reveal:hover { border-color: #d29922; color: #f2cc60; }
+  .error-box { position: fixed; inset: 49px 0 0; z-index: 10; padding: 24px; background: var(--bg); color: #ff7b72; white-space: pre-wrap; }
+  @media (max-width: 720px) {
+    header.topbar { padding: 10px 12px; }
+    header.topbar > div:first-child { display: flex; min-width: 0; align-items: center; }
+    header.topbar > .meta { display: none; }
+    #filename { display: block; min-width: 0; flex: 1; margin-left: 4px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    #controls { top: 57px; left: 8px; width: 198px; max-height: calc(100vh - 74px); overflow: auto; }
+    .command-row button { padding-inline: 2px; font-size: 9px; }
+    #selection { top: auto; right: 8px; bottom: 8px; width: calc(100vw - 222px); max-height: 132px; overflow: auto; }
+    #status { display: none; }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div><a class="back" href="./index.html">Back</a><strong>Architecture Inspection</strong> <span id="filename" class="meta"></span></div>
+  <div class="meta"><span id="mode-meta"></span><button id="review-reveal" type="button" hidden>Reveal review data</button></div>
+</header>
+<canvas id="scene"></canvas>
+<aside id="controls">
+  <section class="control-section">
+    <h2>View</h2>
+    <div id="view-presets" class="segmented" aria-label="Camera view">
+      <button type="button" data-view="iso" aria-pressed="true" title="Isometric view">Iso</button>
+      <button type="button" data-view="front" aria-pressed="false" title="Front elevation">Front</button>
+      <button type="button" data-view="side" aria-pressed="false" title="Side elevation">Side</button>
+      <button type="button" data-view="top" aria-pressed="false" title="Plan view">Top</button>
+    </div>
+    <div class="command-row">
+      <button id="fit-view" type="button" title="Fit visible geometry">Fit</button>
+      <button id="measure-toggle" type="button" aria-pressed="false" title="Measure between two surface points">Measure</button>
+      <button id="annotate-toggle" type="button" aria-pressed="false" title="Place a point annotation on visible geometry">Annotate</button>
+      <button id="capture-view" type="button" title="Download the current rendered view">Capture</button>
+      <button id="save-trace" type="button" title="Download the operation trace">Trace</button>
+      <button id="clear-measure" type="button" title="Clear measurements and annotations">Clear</button>
+    </div>
+    <div id="evidence-note" hidden>
+      <label for="evidence-note-input">Selected evidence note</label>
+      <textarea id="evidence-note-input" maxlength="2000"></textarea>
+      <button id="record-evidence-note" type="button">Record note</button>
+    </div>
+  </section>
+  <h2>Scene layers</h2>
+  <div id="layers">loading…</div>
+  <div id="scene-tools"></div>
+  <section id="deformation-metrics" hidden>
+    <div class="metric-section" data-metric-panel="physical">
+      <h2>Physical metrics</h2>
+      <p class="metric-note">A=1; unchanged by visual scale</p>
+      <dl class="metric-grid">
+        <dt>component</dt><dd data-metric="component"></dd>
+        <dt>max deflection</dt><dd data-metric="deflection"></dd>
+        <dt>max twist</dt><dd data-metric="twist"></dd>
+        <dt>critical station</dt><dd data-metric="station"></dd>
+      </dl>
+    </div>
+    <div class="metric-section" data-metric-panel="displayed">
+      <h2>Displayed preview</h2>
+      <p class="metric-note" id="displayed-metric-note">Rendered mesh; display only, not physical</p>
+      <dl class="metric-grid">
+        <dt>component</dt><dd data-metric="component"></dd>
+        <dt>max deflection</dt><dd data-metric="deflection"></dd>
+        <dt>max twist</dt><dd data-metric="twist"></dd>
+        <dt>critical station</dt><dd data-metric="station"></dd>
+      </dl>
+    </div>
+  </section>
+</aside>
+<aside id="selection">
+  <h2>Selected geometry / evidence</h2>
+  <div id="selection-value">Click visible geometry to inspect it.</div>
+</aside>
+<div id="status"><strong id="stats">loading…</strong><span id="measure-status"></span></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { frameClearOfPanels } from './shared/panel-safe-frame.js';
+
+const params = new URLSearchParams(location.search);
+const file = params.get('file');
+const taskId = params.get('task_id') || params.get('task') || '';
+const sessionId = params.get('session_id') || 'standalone';
+const initialRequirementId = params.get('requirement_id') || null;
+const viewerMode = 'evaluation';
+const reviewOnly = false;
+const protocolVersion = 'v1';
+const messageSchema = 'sciencevision.viewer_message.v1';
+const parentWindow = window.parent !== window ? window.parent : null;
+const requestedParentOrigin = params.get('parent_origin');
+let parentOrigin = location.origin;
+if (requestedParentOrigin) {
+  try {
+    const parsedParentOrigin = new URL(requestedParentOrigin, location.href).origin;
+    if (parsedParentOrigin !== 'null') parentOrigin = parsedParentOrigin;
+  } catch {
+    // Invalid parent origins never relax the same-origin default.
+  }
+}
+const canvas = document.getElementById('scene');
+const filename = document.getElementById('filename');
+const modeMeta = document.getElementById('mode-meta');
+const reviewRevealButton = document.getElementById('review-reveal');
+const stats = document.getElementById('stats');
+const layersNode = document.getElementById('layers');
+const toolsNode = document.getElementById('scene-tools');
+const selectionNode = document.getElementById('selection-value');
+const viewPresetsNode = document.getElementById('view-presets');
+const fitViewButton = document.getElementById('fit-view');
+const measureToggle = document.getElementById('measure-toggle');
+const annotateToggle = document.getElementById('annotate-toggle');
+const captureViewButton = document.getElementById('capture-view');
+const saveTraceButton = document.getElementById('save-trace');
+const clearMeasureButton = document.getElementById('clear-measure');
+const evidenceNoteNode = document.getElementById('evidence-note');
+const evidenceNoteInput = document.getElementById('evidence-note-input');
+const recordEvidenceNoteButton = document.getElementById('record-evidence-note');
+const measureStatus = document.getElementById('measure-status');
+const deformationMetricsNode = document.getElementById('deformation-metrics');
+const physicalMetricsNode = deformationMetricsNode.querySelector('[data-metric-panel="physical"]');
+const displayedMetricsNode = deformationMetricsNode.querySelector('[data-metric-panel="displayed"]');
+const displayedMetricNote = document.getElementById('displayed-metric-note');
+filename.textContent = file ? file.split('/').pop() : '';
+modeMeta.textContent = '';
+modeMeta.classList.toggle('review-only', reviewOnly);
+reviewRevealButton.hidden = !reviewOnly;
+
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+renderer.localClippingEnabled = true;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1117);
+scene.add(new THREE.HemisphereLight(0xddeeff, 0x202733, 2.1));
+const key = new THREE.DirectionalLight(0xffffff, 3.0);
+key.position.set(12, -10, 18);
+scene.add(key);
+const fill = new THREE.DirectionalLight(0x9ecbff, 1.0);
+fill.position.set(-10, 12, 8);
+scene.add(fill);
+
+const camera = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.01, 10000);
+camera.up.set(0, 0, 1);
+const controls = new OrbitControls(camera, canvas);
+controls.enableDamping = true;
+
+const groups = new Map();
+const pickables = [];
+const gtMarkers = [];
+const deformationMeshes = [];
+const displacementFields = [];
+const measurementRoot = new THREE.Group();
+measurementRoot.name = 'measurements';
+scene.add(measurementRoot);
+const annotationRoot = new THREE.Group();
+annotationRoot.name = 'annotations';
+scene.add(annotationRoot);
+const cutPlane = new THREE.Plane(new THREE.Vector3(0, 0, -1), 0);
+let sceneData = null;
+let currentAmplification = 1;
+let sceneRadius = 1;
+let measuring = false;
+let annotating = false;
+let pendingMeasurementPoint = null;
+let pointerStart = null;
+let selectedInspection = null;
+let primaryDeformationEntry = null;
+let physicalDeformationMetrics = null;
+let referenceRevealed = false;
+let currentView = 'iso';
+// Empty border kept around a framed model, as a multiple of the exact fitting distance.
+const FRAMING_MARGIN = 1.08;
+// ||authored target - bbox centre|| / bbox diagonal below which a view counts as
+// whole-scene rather than a local close-up. Measured on this bundle's six scenes the
+// two intents sit at 0.000-0.001 and 0.119-0.330, so the threshold is far from both.
+const WHOLE_SCENE_OFFSET_RATIO = 0.05;
+let cutawayState = null;
+let pendingMeasurementId = null;
+let pendingMeasurementRequirementId = null;
+let pendingMeasurementSemanticRole = null;
+let activeRequirementId = initialRequirementId;
+let activeSemanticRole = params.get('semantic_role') || null;
+let viewerReady = false;
+let messageSequence = 0;
+let captureSequence = 0;
+const annotations = [];
+const measurements = [];
+const notes = [];
+const captures = [];
+const traceStartedAt = performance.now();
+const operationTrace = [];
+window.__SV_ARCH_TRACE__ = operationTrace;
+
+function rounded(value) {
+  return Number(Number(value).toFixed(6));
+}
+
+function vectorState(vector) {
+  return vector.toArray().map(rounded);
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const child of Object.values(value)) deepFreeze(child);
+  return value;
+}
+
+function immutable(value) {
+  return deepFreeze(JSON.parse(JSON.stringify(value)));
+}
+
+function viewportState() {
+  return {
+    css_width: canvas.clientWidth,
+    css_height: canvas.clientHeight,
+    drawing_buffer_width: canvas.width,
+    drawing_buffer_height: canvas.height,
+    pixel_ratio: renderer.getPixelRatio(),
+  };
+}
+
+function cameraState() {
+  return {
+    type: 'perspective',
+    projection: 'perspective',
+    current_view: currentView,
+    position: vectorState(camera.position),
+    target: vectorState(controls.target),
+    up: vectorState(camera.up),
+    fov: rounded(camera.fov),
+    aspect: rounded(camera.aspect),
+    near: rounded(camera.near),
+    far: rounded(camera.far),
+    zoom: rounded(camera.zoom),
+    viewport: viewportState(),
+  };
+}
+
+function inspectionState() {
+  const layerState = {};
+  for (const [name, root] of groups) {
+    const config = sceneData?.layers?.[name] || {};
+    layerState[name] = {
+      label: config.label || name,
+      default_visible: name === 'ground_truth' ? false : config.default_visible !== false,
+      visible: Boolean(root.visible),
+      object_count: (sceneData?.objects || []).filter(object => object.group === name).length,
+    };
+  }
+  const deformationConfig = sceneData?.deformation_display || null;
+  const state = {
+    viewer: 'architecture_inspection',
+    loaded: Boolean(sceneData),
+    mode: viewerMode,
+    task_id: taskId,
+    session_id: sessionId,
+    active_requirement: activeRequirementId ? {
+      requirement_id: activeRequirementId,
+      semantic_role: activeSemanticRole,
+    } : null,
+    scene: sceneData ? {
+      scene_id: sceneData.scene_id || null,
+      scenario_kind: sceneData.scenario_kind || null,
+      object_count: (sceneData.objects || []).length,
+      coordinate_frame: sceneData.coordinate_frame || null,
+    } : null,
+    asset: {file: file || null, kind: 'scene.json'},
+    camera: cameraState(),
+    layers: layerState,
+    cutaway: cutawayState ? {...cutawayState} : null,
+    amplification: deformationConfig ? {
+      default: Number(deformationConfig.default_amplification),
+      current: Number(currentAmplification),
+      min: Number(deformationConfig.min_amplification),
+      max: Number(deformationConfig.max_amplification),
+      display_only: true,
+    } : {default: 1, current: 1, min: 1, max: 1, display_only: true},
+    tools: {
+      measuring,
+      annotating,
+      pending_measurement_id: pendingMeasurementId,
+      pending_measurement_requirement_id: pendingMeasurementRequirementId,
+      pending_measurement_point_m: pendingMeasurementPoint ? vectorState(pendingMeasurementPoint) : null,
+    },
+    annotations,
+    measurements,
+    notes,
+    reference: {
+      available: reviewOnly && groups.has('ground_truth'),
+      revealed: referenceRevealed,
+    },
+    operation_count: operationTrace.length,
+    capture_count: captures.length,
+  };
+  const snapshot = immutable(state);
+  window.__SV_ARCH_STATE__ = snapshot;
+  return snapshot;
+}
+
+function postViewerMessage(type, payload = {}) {
+  if (!parentWindow) return null;
+  const message = immutable({
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    type,
+    task_id: taskId,
+    session_id: sessionId,
+    mode: viewerMode,
+    sequence: ++messageSequence,
+    ...payload,
+  });
+  parentWindow.postMessage(message, parentOrigin);
+  return message;
+}
+
+function sendSnapshot(reason, requestId = null, extra = {}) {
+  const snapshot = inspectionState();
+  postViewerMessage('viewer.snapshot', {
+    request_id: requestId,
+    reason,
+    complete: true,
+    snapshot,
+    ...extra,
+  });
+  return snapshot;
+}
+
+function recordOperation(action, details = {}) {
+  const operation = {
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    sequence: operationTrace.length + 1,
+    task_id: taskId,
+    session_id: sessionId,
+    mode: viewerMode,
+    elapsed_ms: Math.round(performance.now() - traceStartedAt),
+    action,
+    details: immutable(details),
+    complete: true,
+    final_state: null,
+  };
+  operationTrace.push(operation);
+  operation.final_state = inspectionState();
+  deepFreeze(operation);
+  postViewerMessage('viewer.operation', {
+    complete: true,
+    operation,
+    snapshot: operation.final_state,
+    annotations: operation.final_state.annotations,
+    measurements: operation.final_state.measurements,
+    notes: operation.final_state.notes,
+  });
+  return operation;
+}
+
+function downloadBlob(name, blob) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 0);
+}
+
+function safeFilePart(value, fallback) {
+  const result = String(value || '').trim().replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+  return result || fallback;
+}
+
+function nextCaptureId() {
+  captureSequence += 1;
+  const entropy = globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${captureSequence}`;
+  return `capture-${entropy}`;
+}
+
+function nextEvidenceId(kind) {
+  const entropy = globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  return `${kind}-${entropy}`;
+}
+
+function canvasBlob() {
+  return new Promise((resolve, reject) => {
+    renderer.render(scene, camera);
+    canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('Canvas capture failed.')), 'image/png');
+  });
+}
+
+async function sha256Hex(blob) {
+  const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+  return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+}
+
+function blobDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error || new Error('Unable to encode capture.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function captureEvidence({slotId = 'manual', requestId = null, download = false} = {}) {
+  const captureId = nextCaptureId();
+  const safeSlot = safeFilePart(slotId, 'evidence');
+  const filenameValue = `${safeFilePart(taskId, 'architecture')}-${safeSlot}-${safeFilePart(captureId, 'capture')}.png`;
+  const snapshot = sendSnapshot('pre_capture', requestId, {capture_id: captureId, slot_id: safeSlot});
+  const blob = await canvasBlob();
+  const [sha256, dataUrl] = await Promise.all([sha256Hex(blob), blobDataURL(blob)]);
+  const capture = immutable({
+    capture_id: captureId,
+    slot_id: safeSlot,
+    filename: filenameValue,
+    mime_type: 'image/png',
+    captured_at: new Date().toISOString(),
+    byte_length: blob.size,
+    sha256,
+    data_url: dataUrl,
+    width: canvas.width,
+    height: canvas.height,
+    dimensions: {width: canvas.width, height: canvas.height},
+    snapshot,
+  });
+  captures.push(immutable({...capture, data_url: undefined}));
+  recordOperation('capture_view', {capture_id: captureId, slot_id: safeSlot, filename: filenameValue, sha256});
+  postViewerMessage('viewer.capture', {request_id: requestId, slot_id: safeSlot, complete: true, capture});
+  if (download) downloadBlob(filenameValue, blob);
+  return capture;
+}
+
+const groupColors = {
+  structure: '#aab3bd', context: '#6e90b8', evidence: '#35d0ba',
+  damage_surface: '#8f3f46', baseline: '#8b949e', deformed: '#ffb000',
+  vectors: '#58a6ff', ground_truth: '#ff5a5f'
+};
+
+function groupFor(name) {
+  if (!groups.has(name)) {
+    const root = new THREE.Group();
+    root.name = name;
+    groups.set(name, root);
+    scene.add(root);
+  }
+  return groups.get(name);
+}
+
+function objectMaterial(object) {
+  const opacity = object.opacity ?? 1;
+  const isGT = object.group === 'ground_truth';
+  return new THREE.MeshStandardMaterial({
+    color: object.color || '#8b949e',
+    emissive: isGT ? (object.color || '#ff5a5f') : '#000000',
+    emissiveIntensity: isGT ? 0.28 : 0,
+    roughness: 0.72,
+    metalness: 0.04,
+    transparent: opacity < 1,
+    opacity,
+    depthWrite: opacity >= 0.7,
+    side: THREE.DoubleSide,
+    wireframe: Boolean(object.wireframe),
+    clippingPlanes: object.clip ? [cutPlane] : [],
+  });
+}
+
+function tag(root, object) {
+  root.userData.inspection = {
+    id: object.id,
+    label: object.label || object.id,
+    group: object.group,
+  };
+  root.traverse(child => {
+    child.userData.inspection = root.userData.inspection;
+    child.userData.inspectionRoot = root;
+    if (child.isMesh || child.isLine || child.isPoints) pickables.push(child);
+  });
+  return root;
+}
+
+function addEdges(mesh, object) {
+  if (object.edges === false || object.wireframe) return null;
+  const line = new THREE.LineSegments(
+    new THREE.EdgesGeometry(mesh.geometry, 24),
+    new THREE.LineBasicMaterial({
+      color: object.group === 'deformed' ? 0xffd166 : 0x303b46,
+      transparent: true,
+      opacity: object.opacity != null && object.opacity < 0.5 ? 0.48 : 0.72,
+      clippingPlanes: object.clip ? [cutPlane] : [],
+    })
+  );
+  line.userData.inspection = mesh.userData.inspection;
+  line.userData.inspectionRoot = mesh;
+  pickables.push(line);
+  mesh.add(line);
+  return line;
+}
+
+function addGTMarker(root, object) {
+  if (object.group !== 'ground_truth') return;
+  root.updateMatrixWorld(true);
+  const bounds = new THREE.Box3().setFromObject(root);
+  if (bounds.isEmpty()) return;
+  const center = bounds.getCenter(new THREE.Vector3());
+  const size = bounds.getSize(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z, 0.12) * 0.62;
+  const marker = new THREE.Group();
+  marker.position.copy(center);
+  const markerMaterial = new THREE.MeshBasicMaterial({
+    color: object.color || '#ff5a5f', transparent: true, opacity: 0.72,
+    depthTest: false, depthWrite: false,
+  });
+  const ringXY = new THREE.Mesh(
+    new THREE.TorusGeometry(radius, Math.max(radius * 0.025, 0.008), 8, 40),
+    markerMaterial
+  );
+  const ringXZ = ringXY.clone();
+  ringXZ.rotation.x = Math.PI / 2;
+  marker.add(ringXY, ringXZ);
+  marker.traverse(child => { child.renderOrder = 20; });
+  groupFor('ground_truth').add(marker);
+  gtMarkers.push(marker);
+}
+
+function addBox(object) {
+  const geometry = new THREE.BoxGeometry(...object.size);
+  const mesh = new THREE.Mesh(geometry, objectMaterial(object));
+  mesh.position.fromArray(object.center);
+  tag(mesh, object);
+  addEdges(mesh, object);
+  groupFor(object.group).add(mesh);
+  addGTMarker(mesh, object);
+}
+
+// BEGIN DEFORMATION_METRIC_MATH
+function flatVertices(vertices) {
+  return vertices.flatMap(point => point.map(Number));
+}
+
+function displayVertices(object, amplification) {
+  if (!Array.isArray(object.reference_vertices)) return flatVertices(object.vertices);
+  const result = [];
+  for (let index = 0; index < object.vertices.length; index += 1) {
+    const actual = object.vertices[index];
+    const reference = object.reference_vertices[index];
+    result.push(
+      reference[0] + amplification * (actual[0] - reference[0]),
+      reference[1] + amplification * (actual[1] - reference[1]),
+      reference[2] + amplification * (actual[2] - reference[2]),
+    );
+  }
+  return result;
+}
+
+function vertexRows(vertices) {
+  if (Array.isArray(vertices[0])) return vertices.map(point => point.map(Number));
+  if (vertices.length % 3 !== 0) throw new Error('Vertex buffer length is not divisible by 3.');
+  const rows = [];
+  for (let index = 0; index < vertices.length; index += 3) {
+    rows.push([Number(vertices[index]), Number(vertices[index + 1]), Number(vertices[index + 2])]);
+  }
+  return rows;
+}
+
+function stationGroups(referenceVertices) {
+  const rows = vertexRows(referenceVertices);
+  const sorted = rows.map((point, index) => ({index, x: point[0]})).sort((a, b) => a.x - b.x);
+  if (!sorted.length) return [];
+  const span = Math.max(1, sorted[sorted.length - 1].x - sorted[0].x);
+  const tolerance = span * 1e-8;
+  const groups = [];
+  for (const item of sorted) {
+    const group = groups[groups.length - 1];
+    if (!group || Math.abs(item.x - group.x) > tolerance) {
+      groups.push({x: item.x, indices: [item.index]});
+    } else {
+      group.indices.push(item.index);
+    }
+  }
+  return groups;
+}
+
+function deformationMetrics(referenceVertices, displayedVertices, componentId) {
+  const reference = vertexRows(referenceVertices);
+  const displayed = vertexRows(displayedVertices);
+  if (reference.length !== displayed.length) throw new Error('Reference/displayed vertex counts differ.');
+  const groups = stationGroups(reference);
+  if (!groups.length) throw new Error('Deformation mesh has no stations.');
+  const leftSupportX = groups[0].x;
+  let maxDeflectionMm = -1;
+  let maxTwistDeg = -1;
+  let criticalStationM = 0;
+
+  for (const group of groups) {
+    const count = group.indices.length;
+    let refY = 0, refZ = 0, shownY = 0, shownZ = 0;
+    for (const index of group.indices) {
+      refY += reference[index][1]; refZ += reference[index][2];
+      shownY += displayed[index][1]; shownZ += displayed[index][2];
+    }
+    refY /= count; refZ /= count; shownY /= count; shownZ /= count;
+
+    const deflectionMm = Math.abs(shownZ - refZ) * 1000;
+    if (deflectionMm > maxDeflectionMm) {
+      maxDeflectionMm = deflectionMm;
+      criticalStationM = group.x - leftSupportX;
+    }
+
+    // Best-fit 2D rotation in the cross-section YZ plane. This measures the
+    // actual rendered mesh, including the nonlinear angle produced by
+    // p_ref + A * (p_deformed - p_ref), instead of assuming A * theta.
+    let dot = 0, cross = 0;
+    for (const index of group.indices) {
+      const ry = reference[index][1] - refY;
+      const rz = reference[index][2] - refZ;
+      const sy = displayed[index][1] - shownY;
+      const sz = displayed[index][2] - shownZ;
+      dot += ry * sy + rz * sz;
+      cross += ry * sz - rz * sy;
+    }
+    const twistDeg = Math.abs(Math.atan2(cross, dot) * 180 / Math.PI);
+    maxTwistDeg = Math.max(maxTwistDeg, twistDeg);
+  }
+
+  return {
+    component_id: componentId,
+    max_vertical_deflection_mm: maxDeflectionMm,
+    max_twist_deg: maxTwistDeg,
+    critical_station_m: criticalStationM,
+  };
+}
+// END DEFORMATION_METRIC_MATH
+
+function addMesh(object) {
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(displayVertices(object, currentAmplification), 3));
+  geometry.setIndex(object.faces.flat());
+  geometry.computeVertexNormals();
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  const mesh = new THREE.Mesh(geometry, objectMaterial(object));
+  tag(mesh, object);
+  const edges = addEdges(mesh, object);
+  groupFor(object.group).add(mesh);
+  if (Array.isArray(object.reference_vertices)) deformationMeshes.push({mesh, edges, object});
+  addGTMarker(mesh, object);
+}
+
+function addPolyline(object) {
+  const points = object.points.map(point => new THREE.Vector3(...point));
+  const curve = new THREE.CatmullRomCurve3(points);
+  const radius = object.radius ?? (object.group === 'ground_truth' ? 0.014 : 0.008);
+  const tube = new THREE.Mesh(
+    new THREE.TubeGeometry(curve, Math.max(points.length * 8, 32), radius, 10, false),
+    objectMaterial(object)
+  );
+  groupFor(object.group).add(tag(tube, object));
+  addGTMarker(tube, object);
+}
+
+function decodeUint8(encoded) {
+  const raw = atob(encoded);
+  const values = new Uint8Array(raw.length);
+  for (let index = 0; index < raw.length; index += 1) values[index] = raw.charCodeAt(index);
+  return values;
+}
+
+function addVolumeField(object) {
+  const values = decodeUint8(object.values_b64);
+  const [dx, dy] = object.dims;
+  const positions = [];
+  const colors = [];
+  const base = new THREE.Color(object.color || '#35d0ba');
+  for (let index = 0; index < values.length; index += 1) {
+    const value = values[index];
+    if (value < object.threshold) continue;
+    const i = index % dx;
+    const j = Math.floor(index / dx) % dy;
+    const k = Math.floor(index / (dx * dy));
+    positions.push(
+      object.origin[0] + (i + 0.5) * object.spacing[0],
+      object.origin[1] + (j + 0.5) * object.spacing[1],
+      object.origin[2] + (k + 0.5) * object.spacing[2],
+    );
+    const strength = Math.max(0, Math.min(1, (value - object.threshold) / Math.max(1, 255 - object.threshold)));
+    const color = base.clone().lerp(new THREE.Color(0xf0fff9), strength * 0.72);
+    colors.push(color.r, color.g, color.b);
+  }
+  if (!positions.length) throw new Error(`Volume field ${object.id} has no visible samples.`);
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.computeBoundingBox();
+  geometry.computeBoundingSphere();
+  const points = new THREE.Points(
+    geometry,
+    new THREE.PointsMaterial({
+      size: object.point_size || 0.06,
+      vertexColors: true,
+      transparent: true,
+      opacity: object.group === 'ground_truth' ? 0.78 : 0.88,
+      depthWrite: false,
+      sizeAttenuation: true,
+    })
+  );
+  groupFor(object.group).add(tag(points, object));
+  addGTMarker(points, object);
+}
+
+function addDisplacementField(object) {
+  const root = new THREE.Group();
+  const stride = Math.max(1, object.display_stride || 1);
+  const arrows = [];
+  for (let index = 0; index < object.vectors.length; index += stride) {
+    const vector = object.vectors[index];
+    const start = new THREE.Vector3(...vector.start);
+    const delta = new THREE.Vector3(...vector.end).sub(start);
+    if (delta.lengthSq() === 0) continue;
+    const arrow = new THREE.ArrowHelper(delta.clone().normalize(), start, 0.1, object.color || '#58a6ff');
+    root.add(arrow);
+    arrows.push({arrow, start, delta});
+  }
+  groupFor(object.group).add(tag(root, object));
+  displacementFields.push({root, arrows});
+}
+
+function addObject(object) {
+  if (object.kind === 'box') addBox(object);
+  else if (object.kind === 'mesh') addMesh(object);
+  else if (object.kind === 'polyline') addPolyline(object);
+  else if (object.kind === 'volume_field') addVolumeField(object);
+  else if (object.kind === 'displacement_field') addDisplacementField(object);
+  else throw new Error(`Unsupported scene object kind: ${object.kind}`);
+}
+
+function renderLayerControls() {
+  layersNode.innerHTML = '';
+  for (const [name, root] of groups) {
+    if (name === 'ground_truth' && !referenceRevealed) {
+      root.visible = false;
+      continue;
+    }
+    const config = sceneData.layers?.[name] || {};
+    const defaultVisible = config.default_visible !== false;
+    if (!root.userData.layerInitialized) root.visible = name === 'ground_truth' ? referenceRevealed : defaultVisible;
+    root.userData.layerInitialized = true;
+    const label = document.createElement('label');
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = defaultVisible;
+    checkbox.checked = root.visible;
+    checkbox.addEventListener('change', () => {
+      root.visible = checkbox.checked;
+      selectedInspection = null;
+      selectionNode.textContent = 'Click visible geometry to inspect it.';
+      recordOperation('toggle_layer', {layer: name, visible: root.visible});
+      refreshStats();
+    });
+    const swatch = document.createElement('i');
+    swatch.style.background = groupColors[name] || '#8b949e';
+    label.append(checkbox, swatch, document.createTextNode(config.label || name));
+    layersNode.append(label);
+  }
+}
+
+function deformationEntry() {
+  const id = sceneData?.geometry_closure?.deformed_mesh_id;
+  return deformationMeshes.find(entry => entry.object.id === id) || deformationMeshes[0] || null;
+}
+
+function renderMetricPanel(node, metrics) {
+  if (!metrics) return;
+  node.querySelector('[data-metric="component"]').textContent = metrics.component_id || 'unknown';
+  node.querySelector('[data-metric="deflection"]').textContent = `${metrics.max_vertical_deflection_mm.toFixed(1)} mm`;
+  node.querySelector('[data-metric="twist"]').textContent = `${metrics.max_twist_deg.toFixed(3)} deg`;
+  node.querySelector('[data-metric="station"]').textContent = `${metrics.critical_station_m.toFixed(3)} m`;
+}
+
+function displayedMetricsForEntry(entry) {
+  if (!entry) return null;
+  const positions = entry.mesh.geometry.getAttribute('position');
+  return deformationMetrics(
+    entry.object.reference_vertices,
+    positions.array,
+    sceneData.geometry_closure?.component_id || entry.object.id,
+  );
+}
+
+function initializeDeformationMetrics() {
+  if (!referenceRevealed) return;
+  primaryDeformationEntry = deformationEntry();
+  if (!primaryDeformationEntry) return;
+  physicalDeformationMetrics = deformationMetrics(
+    primaryDeformationEntry.object.reference_vertices,
+    displayVertices(primaryDeformationEntry.object, 1),
+    sceneData.geometry_closure?.component_id || primaryDeformationEntry.object.id,
+  );
+  deformationMetricsNode.hidden = false;
+  renderMetricPanel(physicalMetricsNode, physicalDeformationMetrics);
+}
+
+function refreshStats() {
+  if (!sceneData) return;
+  const displayNote = sceneData.deformation_display
+    ? ` · displayed ${currentAmplification}× (display only)`
+    : '';
+  const visibleObjectCount = (sceneData.objects || []).filter(object => object.group !== 'ground_truth' || referenceRevealed).length;
+  const reviewNote = referenceRevealed ? ' · review data revealed' : '';
+  stats.textContent = `${sceneData.scenario_kind} · ${visibleObjectCount} rendered objects${displayNote}${reviewNote}`;
+}
+
+function refreshSelectedInspection() {
+  if (!selectedInspection) return;
+  const {root, info} = selectedInspection;
+  if (!isEffectivelyVisible(root)) {
+    selectedInspection = null;
+    selectionNode.textContent = 'Click visible geometry to inspect it.';
+    return;
+  }
+  root.updateWorldMatrix(true, true);
+  const bounds = new THREE.Box3().setFromObject(root, true);
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const reviewMetrics = referenceRevealed
+    ? `<br>center: ${center.toArray().map(value => value.toFixed(3)).join(', ')} m<br>` +
+      `bounds: ${size.toArray().map(value => value.toFixed(3)).join(' x ')} m`
+    : '';
+  selectionNode.innerHTML = `<b>${info.label || info.id || 'geometry'}</b><br>` +
+    `layer: ${info.group || 'scene'}${reviewMetrics}`;
+}
+
+function refreshDeformationUI() {
+  refreshStats();
+  if (referenceRevealed && primaryDeformationEntry) {
+    renderMetricPanel(displayedMetricsNode, displayedMetricsForEntry(primaryDeformationEntry));
+    displayedMetricNote.textContent = `${currentAmplification}× rendered mesh; display only, not physical`;
+  }
+  refreshSelectedInspection();
+}
+
+function updateAmplification(amplification, {clearExistingMeasurements = false} = {}) {
+  if (clearExistingMeasurements && (measurementRoot.children.length || pendingMeasurementPoint)) {
+    clearMeasurements('measurement cleared: display scale changed');
+  }
+  currentAmplification = amplification;
+  for (const entry of deformationMeshes) {
+    entry.mesh.geometry.setAttribute(
+      'position',
+      new THREE.Float32BufferAttribute(displayVertices(entry.object, amplification), 3)
+    );
+    entry.mesh.geometry.computeVertexNormals();
+    entry.mesh.geometry.computeBoundingBox();
+    entry.mesh.geometry.computeBoundingSphere();
+    if (entry.edges) {
+      entry.edges.geometry.dispose();
+      entry.edges.geometry = new THREE.EdgesGeometry(entry.mesh.geometry, 24);
+    }
+  }
+  for (const field of displacementFields) {
+    for (const {arrow, start, delta} of field.arrows) {
+      arrow.position.copy(start);
+      const length = Math.max(delta.length() * amplification, 0.08);
+      arrow.setLength(length, Math.min(length * 0.26, 0.22), Math.min(length * 0.14, 0.12));
+    }
+  }
+  refreshDeformationUI();
+}
+
+function renderSceneTools(bounds) {
+  toolsNode.innerHTML = '';
+  cutawayState = null;
+  if (sceneData.cutaway) {
+    const min = bounds.min.z;
+    const max = bounds.max.z;
+    const fraction = sceneData.cutaway.default_fraction ?? 1;
+    const value = min + (max - min) * fraction;
+    cutawayState = {
+      axis: 'z',
+      label: sceneData.cutaway.label || 'cutaway',
+      min_m: rounded(min),
+      max_m: rounded(max),
+      default_fraction: rounded(fraction),
+      default_value_m: rounded(value),
+      current_value_m: rounded(value),
+    };
+    cutPlane.normal.set(0, 0, -1);
+    cutPlane.constant = value;
+    const wrapper = document.createElement('label');
+    wrapper.className = 'scene-tool';
+    wrapper.innerHTML = `<span>${sceneData.cutaway.label || 'cutaway'}</span><output>${value.toFixed(2)} m</output>`;
+    const input = document.createElement('input');
+    input.type = 'range'; input.dataset.tool = 'cutaway'; input.min = min; input.max = max; input.step = (max - min) / 100; input.value = value;
+    input.addEventListener('input', () => {
+      cutPlane.constant = Number(input.value);
+      cutawayState.current_value_m = rounded(input.value);
+      wrapper.querySelector('output').textContent = `${Number(input.value).toFixed(2)} m`;
+    });
+    input.addEventListener('change', () => {
+      recordOperation('set_cutaway', {axis: 'z', value_m: Number(Number(input.value).toFixed(6))});
+    });
+    wrapper.append(input);
+    toolsNode.append(wrapper);
+  }
+  if (sceneData.deformation_display) {
+    const config = sceneData.deformation_display;
+    const wrapper = document.createElement('label');
+    wrapper.className = 'scene-tool';
+    wrapper.innerHTML = `<span>Visual displacement scale <small>(display only)</small></span><output>${config.default_amplification}×</output>`;
+    const input = document.createElement('input');
+    input.type = 'range'; input.dataset.tool = 'amplification'; input.min = config.min_amplification; input.max = config.max_amplification; input.step = 1; input.value = config.default_amplification;
+    input.addEventListener('input', () => {
+      updateAmplification(Number(input.value), {clearExistingMeasurements: true});
+      wrapper.querySelector('output').textContent = `${input.value}×`;
+      // Raising the scale grows the deformed mesh (up to 40x here), which can push it
+      // past the frustum. Same rule as a resize: pull back only while the reviewer is
+      // still on a preset view, so their own framing is never overridden.
+      if (currentView !== 'custom') ensureFramed();
+    });
+    input.addEventListener('change', () => {
+      recordOperation('set_deformation_amplification', {amplification: Number(input.value), display_only: true});
+    });
+    wrapper.append(input);
+    toolsNode.append(wrapper);
+  }
+}
+
+function visibleBounds() {
+  const bounds = new THREE.Box3();
+  for (const root of groups.values()) {
+    if (root.visible) bounds.expandByObject(root, true);
+  }
+  return bounds;
+}
+
+// Smallest distance along `direction` (a target-to-camera vector) that keeps every
+// corner of `bounds` inside the frustum. Only the vertical FOV is fixed, so the
+// horizontal half-angle depends on the canvas aspect: on the wide letterbox canvas
+// this page renders into, the vertical axis is what actually clips. Solving both
+// axes per corner keeps the fit tight instead of over-pulling on a bounding sphere.
+function framingBasis(direction) {
+  const aspect = canvas.clientWidth / Math.max(canvas.clientHeight, 1);
+  const tanVertical = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  const axis = direction.clone().normalize();
+  const right = new THREE.Vector3().crossVectors(camera.up, axis);
+  if (right.lengthSq() < 1e-8) right.set(1, 0, 0);
+  right.normalize();
+  return {
+    axis,
+    right,
+    up: new THREE.Vector3().crossVectors(axis, right).normalize(),
+    tanHorizontal: Math.max(tanVertical * aspect, 1e-6),
+    tanVertical,
+  };
+}
+
+function boundsCorners(bounds) {
+  const corners = [];
+  for (let corner = 0; corner < 8; corner += 1) {
+    corners.push(
+      new THREE.Vector3(
+        corner & 1 ? bounds.max.x : bounds.min.x,
+        corner & 2 ? bounds.max.y : bounds.min.y,
+        corner & 4 ? bounds.max.z : bounds.min.z
+      )
+    );
+  }
+  return corners;
+}
+
+function framingDistance(bounds, direction, target, margin = FRAMING_MARGIN) {
+  if (bounds.isEmpty()) return 0;
+  const basis = framingBasis(direction);
+  const offset = new THREE.Vector3();
+  let distance = 0;
+  for (const corner of boundsCorners(bounds)) {
+    offset.copy(corner).sub(target);
+    const along = offset.dot(basis.axis);
+    distance = Math.max(
+      distance,
+      along + Math.abs(offset.dot(basis.right)) / basis.tanHorizontal,
+      along + Math.abs(offset.dot(basis.up)) / basis.tanVertical
+    );
+  }
+  return Math.max(distance * margin, 1e-3);
+}
+
+// Distance plus the sideways target shift that puts the projected silhouette in the
+// middle of the canvas. Re-centring relaxes whichever corner was binding, so the
+// distance shrinks on the next pass; four passes are well past convergence on this
+// bundle's scenes. The shift is capped at half the diagonal so a degenerate scene
+// cannot walk the orbit pivot away from the geometry.
+function solveFraming(bounds, direction, target, margin = FRAMING_MARGIN) {
+  const aimed = target.clone();
+  if (bounds.isEmpty()) return {distance: 0, target: aimed};
+  const basis = framingBasis(direction);
+  const corners = boundsCorners(bounds);
+  const limit = bounds.getSize(new THREE.Vector3()).length() * 0.5;
+  const origin = target.clone();
+  const offset = new THREE.Vector3();
+  let distance = framingDistance(bounds, direction, aimed, margin);
+  for (let pass = 0; pass < 4; pass += 1) {
+    let minX = Infinity;
+    let maxX = -Infinity;
+    let minY = Infinity;
+    let maxY = -Infinity;
+    for (const corner of corners) {
+      offset.copy(corner).sub(aimed);
+      const depth = Math.max(distance - offset.dot(basis.axis), 1e-6);
+      const x = offset.dot(basis.right) / (depth * basis.tanHorizontal);
+      const y = offset.dot(basis.up) / (depth * basis.tanVertical);
+      minX = Math.min(minX, x);
+      maxX = Math.max(maxX, x);
+      minY = Math.min(minY, y);
+      maxY = Math.max(maxY, y);
+    }
+    const shiftX = ((maxX + minX) / 2) * distance * basis.tanHorizontal;
+    const shiftY = ((maxY + minY) / 2) * distance * basis.tanVertical;
+    aimed.addScaledVector(basis.right, shiftX).addScaledVector(basis.up, shiftY);
+    if (aimed.distanceTo(origin) > limit) {
+      aimed.sub(origin).setLength(limit).add(origin);
+    }
+    distance = framingDistance(bounds, direction, aimed, margin);
+  }
+  return {distance, target: aimed};
+}
+
+// The control and evidence panels float over the canvas, so a fit measured
+// against the canvas rectangle alone can leave part of the model behind an
+// opaque panel -- on a narrow canvas that hid a whole pier of the bridge.
+function clearPanels(bounds) {
+  frameClearOfPanels({
+    THREE,
+    canvas,
+    camera,
+    target: controls.target,
+    bounds,
+    panels: ['controls', 'selection', 'status'].map(id => document.getElementById(id)),
+  });
+}
+
+function fitVisible(direction = null) {
+  const bounds = visibleBounds();
+  if (bounds.isEmpty()) return;
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z, 1);
+  sceneRadius = radius;
+  const currentDirection = camera.position.clone().sub(controls.target);
+  const cameraDirection = (direction || (currentDirection.lengthSq() ? currentDirection : new THREE.Vector3(1, -1, 0.72))).clone().normalize();
+  const solved = solveFraming(bounds, cameraDirection, center);
+  camera.position.copy(solved.target).add(cameraDirection.multiplyScalar(solved.distance));
+  camera.near = Math.max(solved.distance / 1000, 0.005);
+  camera.far = Math.max(solved.distance * 20, radius * 40);
+  camera.updateProjectionMatrix();
+  controls.target.copy(solved.target);
+  clearPanels(bounds);
+  controls.update();
+}
+
+// A resize changes the frustum, so a view that fitted before can clip after. Pull
+// straight back along the current axis when that happens -- never re-aim, never
+// zoom in -- so an authored close-up keeps its framing and the reviewer keeps
+// whatever angle they were on. Skipped once they have moved the camera themselves.
+function ensureFramed() {
+  const bounds = visibleBounds();
+  if (bounds.isEmpty()) return;
+  const direction = camera.position.clone().sub(controls.target);
+  if (!direction.lengthSq()) return;
+  const required = framingDistance(bounds, direction, controls.target);
+  if (direction.length() >= required) return;
+  camera.position.copy(controls.target).add(direction.normalize().multiplyScalar(required));
+  camera.near = Math.max(required / 1000, 0.005);
+  camera.far = Math.max(required * 20, sceneRadius * 40);
+  camera.updateProjectionMatrix();
+  clearPanels(bounds);
+  controls.update();
+}
+
+function setCameraView(name) {
+  const directions = {
+    iso: new THREE.Vector3(1, -1, 0.72),
+    front: new THREE.Vector3(0, -1, 0.08),
+    side: new THREE.Vector3(1, 0, 0.08),
+    top: new THREE.Vector3(0, 0, 1),
+  };
+  camera.up.set(0, 0, 1);
+  if (name === 'top') camera.up.set(0, 1, 0);
+  currentView = name;
+  fitVisible(directions[name] || directions.iso);
+  for (const button of viewPresetsNode.querySelectorAll('button')) {
+    button.setAttribute('aria-pressed', button.dataset.view === name ? 'true' : 'false');
+  }
+  recordOperation('set_view', {view: name});
+}
+
+function restoreState(snapshot, requestId = null) {
+  if (!snapshot || snapshot.viewer !== 'architecture_inspection' || snapshot.task_id !== taskId || snapshot.session_id !== sessionId || snapshot.mode !== viewerMode) return;
+  for (const [name, layer] of Object.entries(snapshot.layers || {})) {
+    const root = groups.get(name);
+    if (root && typeof layer.visible === 'boolean' && name !== 'ground_truth') root.visible = layer.visible;
+  }
+  const visibleLayerEntries = [...groups.entries()].filter(([name]) => name !== 'ground_truth' || referenceRevealed);
+  [...layersNode.querySelectorAll('input[type="checkbox"]')].forEach((checkbox, index) => {
+    if (visibleLayerEntries[index]) checkbox.checked = visibleLayerEntries[index][1].visible;
+  });
+  const cutValue = Number(snapshot.cutaway?.current_value_m);
+  const cutInput = toolsNode.querySelector('input[data-tool="cutaway"]');
+  if (cutawayState && cutInput && Number.isFinite(cutValue)) {
+    cutInput.value = String(Math.min(Number(cutInput.max), Math.max(Number(cutInput.min), cutValue)));
+    cutPlane.constant = Number(cutInput.value);
+    cutawayState.current_value_m = rounded(cutInput.value);
+    cutInput.closest('.scene-tool')?.querySelector('output')?.replaceChildren(document.createTextNode(`${Number(cutInput.value).toFixed(2)} m`));
+  }
+  const amplification = Number(snapshot.amplification?.current);
+  const amplificationInput = toolsNode.querySelector('input[data-tool="amplification"]');
+  if (amplificationInput && Number.isFinite(amplification)) {
+    amplificationInput.value = String(Math.min(Number(amplificationInput.max), Math.max(Number(amplificationInput.min), amplification)));
+    updateAmplification(Number(amplificationInput.value));
+    amplificationInput.closest('.scene-tool')?.querySelector('output')?.replaceChildren(document.createTextNode(`${amplificationInput.value}×`));
+  }
+  notes.length = 0;
+  for (const note of Array.isArray(snapshot.notes) ? snapshot.notes : []) {
+    if (note?.requirement_id && note?.note_id) notes.push(immutable(note));
+  }
+  const cameraSnapshot = snapshot.camera;
+  if (cameraSnapshot && Array.isArray(cameraSnapshot.position) && Array.isArray(cameraSnapshot.target) && Array.isArray(cameraSnapshot.up)) {
+    camera.position.fromArray(cameraSnapshot.position);
+    controls.target.fromArray(cameraSnapshot.target);
+    camera.up.fromArray(cameraSnapshot.up);
+    if (Number.isFinite(Number(cameraSnapshot.fov))) camera.fov = Number(cameraSnapshot.fov);
+    camera.updateProjectionMatrix();
+    controls.update();
+    currentView = cameraSnapshot.current_view || 'custom';
+    for (const button of viewPresetsNode.querySelectorAll('button')) button.setAttribute('aria-pressed', button.dataset.view === currentView ? 'true' : 'false');
+  }
+  refreshStats();
+  syncEvidenceNoteControl();
+  const operation = recordOperation('restore_state', {source: 'parent_draft'});
+  sendSnapshot('state_restored', requestId, {operation_sequence: operation.sequence});
+}
+
+function frameScene() {
+  const bounds = visibleBounds();
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.x, size.y, size.z, 1);
+  sceneRadius = radius;
+  const view = sceneData.view || {};
+  const target = Array.isArray(view.target) ? new THREE.Vector3(...view.target) : center;
+  // An authored target sitting on the bounding-box centre means the scene was framed
+  // as a whole, so its authored distance carries no information: what fits depends on
+  // the canvas aspect ratio, which only the browser knows. A target offset from the
+  // centre is a deliberate close-up on a local feature: leave it exactly as authored,
+  // or the crack under inspection zooms away.
+  const diagonal = size.length();
+  const wholeScene = diagonal <= 0 || target.distanceTo(center) / diagonal < WHOLE_SCENE_OFFSET_RATIO;
+  let aim = target;
+  let wholeSceneFraming = false;
+  if (Array.isArray(view.position)) {
+    camera.position.fromArray(view.position);
+    const authored = camera.position.clone().sub(target);
+    // Re-solve in both directions, not just when the authored pose is too close: a
+    // pose authored too far away used to survive and leave the model small.
+    if (wholeScene && authored.lengthSq() > 0) {
+      const solved = solveFraming(bounds, authored, target);
+      aim = solved.target;
+      camera.position.copy(aim).add(authored.normalize().multiplyScalar(solved.distance));
+      wholeSceneFraming = true;
+    }
+  } else {
+    // distance_scale is authored as a multiple of the fitting distance, so it replaces
+    // the default margin rather than stacking on top of it.
+    const authored = new THREE.Vector3(1, 1, 0.72).normalize();
+    const solved = solveFraming(bounds, authored, target, view.distance_scale || FRAMING_MARGIN);
+    aim = solved.target;
+    camera.position.copy(aim).add(authored.multiplyScalar(solved.distance));
+    wholeSceneFraming = true;
+  }
+  const distance = Math.max(camera.position.distanceTo(aim), 1e-3);
+  camera.near = Math.max(distance / 1000, 0.005);
+  camera.far = Math.max(distance * 20, radius * 40);
+  camera.updateProjectionMatrix();
+  controls.target.copy(aim);
+  // A whole-scene framing is ours to adjust: the authored pose supplied only a
+  // direction, so sliding the model clear of the floating panels costs nothing. An
+  // authored close-up is left exactly as authored -- the scene bounds are not what
+  // it frames, so a correction measured against them would zoom the inspected
+  // feature away.
+  if (wholeSceneFraming) clearPanels(bounds);
+  controls.update();
+  const grid = new THREE.GridHelper(radius * 2.5, 24, 0x30363d, 0x21262d);
+  grid.rotation.x = Math.PI / 2;
+  grid.position.z = bounds.min.z - radius * 0.025;
+  scene.add(grid);
+  const axes = new THREE.AxesHelper(radius * 0.18);
+  axes.position.set(bounds.min.x, bounds.min.y, bounds.min.z);
+  scene.add(axes);
+  renderSceneTools(bounds);
+}
+
+function fail(error) {
+  document.body.insertAdjacentHTML('beforeend', `<div class="error-box">Failed to load architecture scene:\n${String(error?.message || error)}</div>`);
+}
+
+async function load() {
+  if (!file) throw new Error('Missing ?file= query parameter.');
+  const response = await fetch(file, {cache: 'no-cache'});
+  if (!response.ok) throw new Error(`HTTP ${response.status} for ${file}`);
+  sceneData = await response.json();
+  const deformationConfig = sceneData.deformation_display;
+  currentAmplification = deformationConfig?.default_amplification || 1;
+  for (const object of sceneData.objects || []) {
+    if (!reviewOnly && object.group === 'ground_truth') continue;
+    addObject(object);
+  }
+  renderLayerControls();
+  updateAmplification(currentAmplification);
+  frameScene();
+  recordOperation('open_scene', {
+    mode: reviewOnly ? 'review-only-hidden' : 'evaluation',
+    scenario_kind: sceneData.scenario_kind,
+    rendered_objects: (sceneData.objects || []).filter(object => reviewOnly || object.group !== 'ground_truth').length,
+  });
+}
+
+const raycaster = new THREE.Raycaster();
+raycaster.params.Line.threshold = 0.08;
+raycaster.params.Points.threshold = 0.08;
+const pointer = new THREE.Vector2();
+function isEffectivelyVisible(object) {
+  for (let node = object; node; node = node.parent) {
+    if (!node.visible) return false;
+  }
+  return true;
+}
+
+function clearMeasurements(reason = '') {
+  const hadMeasurement = measurementRoot.children.length > 0 || pendingMeasurementPoint !== null;
+  measurementRoot.traverse(object => {
+    object.geometry?.dispose();
+    if (Array.isArray(object.material)) object.material.forEach(item => item.dispose());
+    else object.material?.dispose();
+  });
+  measurementRoot.clear();
+  measurements.length = 0;
+  pendingMeasurementPoint = null;
+  pendingMeasurementId = null;
+  pendingMeasurementRequirementId = null;
+  pendingMeasurementSemanticRole = null;
+  measureStatus.textContent = reason && hadMeasurement ? reason : (measuring ? 'measurement active' : '');
+  if (hadMeasurement) selectionNode.textContent = reason || 'Measurements cleared.';
+  return hadMeasurement;
+}
+
+function clearAnnotations() {
+  const hadAnnotations = annotationRoot.children.length > 0 || annotations.length > 0;
+  annotationRoot.traverse(object => {
+    object.geometry?.dispose();
+    if (Array.isArray(object.material)) object.material.forEach(item => item.dispose());
+    else object.material?.dispose();
+  });
+  annotationRoot.clear();
+  annotations.length = 0;
+  return hadAnnotations;
+}
+
+function clearEvidence() {
+  const clearedMeasurements = clearMeasurements();
+  const clearedAnnotations = clearAnnotations();
+  const clearedNotes = notes.length > 0;
+  notes.length = 0;
+  evidenceNoteInput.value = '';
+  if (clearedMeasurements || clearedAnnotations || clearedNotes) {
+    selectionNode.textContent = 'Measurements, annotations, and notes cleared.';
+    recordOperation('clear_evidence', {measurements: clearedMeasurements, annotations: clearedAnnotations, notes: clearedNotes});
+  }
+}
+
+function syncEvidenceNoteControl() {
+  const acceptsText = activeSemanticRole === 'text' && Boolean(activeRequirementId);
+  evidenceNoteNode.hidden = !acceptsText;
+  if (!acceptsText) {
+    evidenceNoteInput.value = '';
+    return;
+  }
+  evidenceNoteInput.value = notes.find(note => note.requirement_id === activeRequirementId)?.text || '';
+  evidenceNoteInput.placeholder = activeRequirementId;
+}
+
+function recordEvidenceNote() {
+  const text = evidenceNoteInput.value.trim();
+  if (!activeRequirementId || activeSemanticRole !== 'text' || !text) return;
+  let note = notes.find(row => row.requirement_id === activeRequirementId);
+  if (!note) {
+    note = {
+      note_id: nextEvidenceId('note'),
+      requirement_id: activeRequirementId,
+      semantic_role: activeSemanticRole,
+      unassigned: false,
+      text,
+      created_at: new Date().toISOString(),
+    };
+    notes.push(note);
+  } else {
+    note.text = text;
+    note.updated_at = new Date().toISOString();
+  }
+  selectionNode.innerHTML = `<b>Evidence note</b><br>${String(text).replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[character])}`;
+  recordOperation('record_note', note);
+}
+
+function addMeasurementMarker(point) {
+  const marker = new THREE.Mesh(
+    new THREE.SphereGeometry(Math.max(sceneRadius * 0.008, 0.012), 16, 10),
+    new THREE.MeshBasicMaterial({color: 0x58a6ff, depthTest: false})
+  );
+  marker.position.copy(point);
+  marker.renderOrder = 30;
+  measurementRoot.add(marker);
+}
+
+function recordMeasurement(point) {
+  selectedInspection = null;
+  addMeasurementMarker(point);
+  if (!pendingMeasurementPoint) {
+    pendingMeasurementPoint = point.clone();
+    pendingMeasurementId = nextEvidenceId('measurement');
+    pendingMeasurementRequirementId = activeRequirementId;
+    pendingMeasurementSemanticRole = activeSemanticRole;
+    measureStatus.textContent = 'point 1 set';
+    selectionNode.innerHTML = `<b>Measurement point 1</b><br>${point.toArray().map(value => value.toFixed(3)).join(', ')} m`;
+    recordOperation('measure_point', {
+      measurement_id: pendingMeasurementId,
+      requirement_id: pendingMeasurementRequirementId,
+      semantic_role: pendingMeasurementSemanticRole,
+      unassigned: !pendingMeasurementRequirementId,
+      index: 1,
+      point_m: point.toArray().map(value => Number(value.toFixed(6))),
+    });
+    return;
+  }
+  const start = pendingMeasurementPoint;
+  const geometry = new THREE.BufferGeometry().setFromPoints([start, point]);
+  const line = new THREE.Line(
+    geometry,
+    new THREE.LineBasicMaterial({color: 0x58a6ff, depthTest: false, transparent: true, opacity: 0.95})
+  );
+  line.renderOrder = 29;
+  measurementRoot.add(line);
+  const distance = start.distanceTo(point);
+  measureStatus.textContent = `${distance.toFixed(3)} m`;
+  selectionNode.innerHTML = `<b>Measured distance</b><br>${distance.toFixed(3)} m<br>` +
+    `A: ${start.toArray().map(value => value.toFixed(3)).join(', ')} m<br>` +
+    `B: ${point.toArray().map(value => value.toFixed(3)).join(', ')} m`;
+  const measurement = {
+    measurement_id: pendingMeasurementId || nextEvidenceId('measurement'),
+    requirement_id: pendingMeasurementRequirementId,
+    semantic_role: pendingMeasurementSemanticRole,
+    unassigned: !pendingMeasurementRequirementId,
+    index: measurements.length + 1,
+    start_m: start.toArray().map(value => Number(value.toFixed(6))),
+    end_m: point.toArray().map(value => Number(value.toFixed(6))),
+    distance_m: Number(distance.toFixed(6)),
+  };
+  measurements.push(measurement);
+  recordOperation('measure_distance', measurement);
+  pendingMeasurementPoint = null;
+  pendingMeasurementId = null;
+  pendingMeasurementRequirementId = null;
+  pendingMeasurementSemanticRole = null;
+}
+
+function recordAnnotation(point, info) {
+  const marker = new THREE.Mesh(
+    new THREE.SphereGeometry(Math.max(sceneRadius * 0.011, 0.016), 18, 12),
+    new THREE.MeshBasicMaterial({color: 0xffd166, depthTest: false, depthWrite: false})
+  );
+  marker.position.copy(point);
+  marker.renderOrder = 31;
+  annotationRoot.add(marker);
+  const annotation = {
+    annotation_id: nextEvidenceId('annotation'),
+    requirement_id: activeRequirementId,
+    semantic_role: activeSemanticRole,
+    unassigned: !activeRequirementId,
+    index: annotations.length + 1,
+    point_m: point.toArray().map(value => Number(value.toFixed(6))),
+    object_label: info.label || info.id || 'visible geometry',
+    layer: info.group || 'scene',
+  };
+  annotations.push(annotation);
+  selectionNode.innerHTML = `<b>Annotation ${annotation.index}</b><br>${annotation.object_label}<br>` +
+    `${annotation.point_m.map(value => value.toFixed(3)).join(', ')} m`;
+  recordOperation('annotate_point', annotation);
+}
+
+function inspectAt(event) {
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, camera);
+  const hit = raycaster.intersectObjects(pickables.filter(isEffectivelyVisible), false)[0];
+  if (!hit) return;
+  if (measuring) {
+    recordMeasurement(hit.point);
+    return;
+  }
+  const info = hit.object.userData.inspection || {};
+  if (annotating) {
+    selectedInspection = null;
+    recordAnnotation(hit.point, info);
+    return;
+  }
+  const inspectedRoot = hit.object.userData.inspectionRoot || hit.object;
+  selectedInspection = {root: inspectedRoot, info};
+  refreshSelectedInspection();
+}
+
+canvas.addEventListener('pointerdown', event => {
+  pointerStart = {x: event.clientX, y: event.clientY, id: event.pointerId};
+});
+canvas.addEventListener('pointerup', event => {
+  if (!pointerStart || pointerStart.id !== event.pointerId) return;
+  const distance = Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y);
+  pointerStart = null;
+  if (distance <= 4) inspectAt(event);
+});
+
+viewPresetsNode.addEventListener('click', event => {
+  const button = event.target.closest('button[data-view]');
+  if (button) setCameraView(button.dataset.view);
+});
+fitViewButton.addEventListener('click', () => {
+  fitVisible();
+  currentView = 'custom';
+  for (const button of viewPresetsNode.querySelectorAll('button')) button.setAttribute('aria-pressed', 'false');
+  recordOperation('fit_visible');
+});
+measureToggle.addEventListener('click', () => {
+  measuring = !measuring;
+  if (measuring) {
+    annotating = false;
+    annotateToggle.setAttribute('aria-pressed', 'false');
+  }
+  measureToggle.setAttribute('aria-pressed', measuring ? 'true' : 'false');
+  pendingMeasurementPoint = null;
+  pendingMeasurementId = null;
+  pendingMeasurementRequirementId = null;
+  pendingMeasurementSemanticRole = null;
+  measureStatus.textContent = measuring ? 'measurement active' : '';
+  recordOperation('set_measure_mode', {enabled: measuring});
+});
+annotateToggle.addEventListener('click', () => {
+  annotating = !annotating;
+  if (annotating) {
+    measuring = false;
+    pendingMeasurementPoint = null;
+    pendingMeasurementId = null;
+    pendingMeasurementRequirementId = null;
+    pendingMeasurementSemanticRole = null;
+    measureToggle.setAttribute('aria-pressed', 'false');
+    measureStatus.textContent = '';
+  }
+  annotateToggle.setAttribute('aria-pressed', annotating ? 'true' : 'false');
+  recordOperation('set_annotation_mode', {enabled: annotating});
+});
+captureViewButton.addEventListener('click', () => {
+  void captureEvidence({slotId: 'manual', download: true}).catch(error => fail(error));
+});
+saveTraceButton.addEventListener('click', () => {
+  recordOperation('save_trace', {final_state: true, annotations: annotations.length});
+  const state = inspectionState();
+  const traceId = `${Date.now().toString(36)}-${operationTrace.length}`;
+  const payload = {
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    artifact_schema_version: 'sciencevision.viewer_trace.v1',
+    task_id: taskId,
+    session_id: sessionId,
+    complete: true,
+    mode: reviewOnly ? (referenceRevealed ? 'review-only-revealed' : 'review-only-hidden') : 'evaluation',
+    operations: operationTrace,
+    captures,
+    state,
+  };
+  const traceName = `${safeFilePart(taskId, 'architecture')}-trace-${traceId}.json`;
+  downloadBlob(traceName, new Blob([`${JSON.stringify(payload, null, 2)}\n`], {type: 'application/json'}));
+});
+clearMeasureButton.addEventListener('click', clearEvidence);
+recordEvidenceNoteButton.addEventListener('click', recordEvidenceNote);
+controls.addEventListener('start', () => {
+  currentView = 'custom';
+  for (const button of viewPresetsNode.querySelectorAll('button')) button.setAttribute('aria-pressed', 'false');
+});
+controls.addEventListener('end', () => recordOperation('orbit_or_pan'));
+
+function revealReference(source) {
+  if (!reviewOnly || referenceRevealed) return;
+  referenceRevealed = true;
+  const gt = groups.get('ground_truth');
+  if (gt) gt.visible = true;
+  initializeDeformationMetrics();
+  renderLayerControls();
+  refreshDeformationUI();
+  modeMeta.textContent = '';
+  reviewRevealButton.disabled = true;
+  reviewRevealButton.textContent = 'Review data revealed';
+  const operation = recordOperation('reveal_review_data', {
+    source,
+    warning: 'evaluation evidence invalid after reveal',
+  });
+  postViewerMessage('viewer.reference_revealed', {
+    complete: true,
+    available: true,
+    revealed: true,
+    operation,
+    snapshot: operation.final_state,
+  });
+}
+
+reviewRevealButton.addEventListener('click', () => {
+  if (!reviewOnly || referenceRevealed) return;
+  if (parentWindow) {
+    postViewerMessage('viewer.reveal_reference.request', {complete: false});
+    return;
+  }
+  revealReference('standalone_control');
+});
+
+function trustedParentMessage(event) {
+  if (!parentWindow || event.source !== parentWindow || event.origin !== parentOrigin) return false;
+  const message = event.data;
+  return Boolean(
+    message && typeof message === 'object' &&
+    message.schema_version === messageSchema &&
+    message.task_id === taskId &&
+    message.session_id === sessionId &&
+    message.mode === viewerMode
+  );
+}
+
+window.addEventListener('message', event => {
+  if (!trustedParentMessage(event)) return;
+  const message = event.data;
+  if (message.type === 'snapshot.request') {
+    sendSnapshot('parent_request', message.request_id || null);
+  } else if (message.type === 'capture.request' && viewerReady) {
+    void captureEvidence({
+      slotId: message.slot_id || 'evidence',
+      requestId: message.request_id || null,
+      download: false,
+    }).catch(error => {
+      postViewerMessage('viewer.capture', {
+        request_id: message.request_id || null,
+        complete: false,
+        error: String(error?.message || error),
+        snapshot: inspectionState(),
+      });
+    });
+  } else if (message.type === 'requirement.select') {
+    activeRequirementId = typeof message.requirement_id === 'string' && message.requirement_id ? message.requirement_id : null;
+    activeSemanticRole = typeof message.semantic_role === 'string' && message.semantic_role ? message.semantic_role : null;
+    syncEvidenceNoteControl();
+    recordOperation('select_requirement', {
+      requirement_id: activeRequirementId,
+      semantic_role: activeSemanticRole,
+      assigned: Boolean(activeRequirementId),
+    });
+  } else if (message.type === 'state.restore') {
+    restoreState(message.snapshot, message.request_id || null);
+  } else if (message.type === 'reveal_reference' && reviewOnly) {
+    revealReference('parent_message');
+  }
+});
+
+function animate() {
+  controls.update();
+  const pulse = 1 + Math.sin(performance.now() * 0.004) * 0.055;
+  for (const marker of gtMarkers) marker.scale.setScalar(pulse);
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', () => {
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  camera.aspect = canvas.clientWidth / Math.max(canvas.clientHeight, 1);
+  camera.updateProjectionMatrix();
+  if (currentView !== 'custom') ensureFramed();
+});
+
+load().then(() => {
+  viewerReady = true;
+  const state = inspectionState();
+  postViewerMessage('viewer.ready', {complete: true, snapshot: state});
+}).catch(error => {
+  fail(error);
+  postViewerMessage('viewer.ready', {
+    complete: false,
+    error: String(error?.message || error),
+    snapshot: inspectionState(),
+  });
+});
+animate();
+</script>
+</body>
+</html>

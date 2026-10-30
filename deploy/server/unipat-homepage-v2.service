@@ -1,0 +1,23 @@
+[Unit]
+Description=UniPat redesigned public website
+After=network.target
+
+[Service]
+Type=simple
+User=unipat-web
+Group=unipat-web
+WorkingDirectory=/opt/unipat-official/current
+Environment="CDN_URL="
+Environment="PYTHONDONTWRITEBYTECODE=1"
+Environment="PYTHONUNBUFFERED=1"
+ExecStart=/opt/unipat-official/current/.venv/bin/gunicorn --workers 2 --threads 2 --bind 127.0.0.1:5003 --timeout 60 --worker-tmp-dir /tmp --access-logfile - --error-logfile - wsgi:application
+Restart=always
+RestartSec=3
+TimeoutStopSec=30
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+
+[Install]
+WantedBy=multi-user.target

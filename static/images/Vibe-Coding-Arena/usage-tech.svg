@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 440 470" font-family="Helvetica,Arial,sans-serif">
+<text x="220" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a1a1a">Technical area</text>
+<text x="220" y="43" text-anchor="middle" font-size="10.5" fill="#8a8f98">backend, ML, systems, …</text>
+<path d="M220.00 156.00 A88 88 0 0 1 306.83 229.69 L271.31 235.55 A52 52 0 0 0 220.00 192.00 Z" fill="#4c1d95" stroke="#fff" stroke-width="1.5"/>
+<line x1="276.94" y1="176.91" x2="280.83" y2="172.33" stroke="#d1d5db" stroke-width="1"/>
+<text x="282.12" y="170.81" font-size="9.5" fill="#374151" text-anchor="start" transform="rotate(-49.68 282.12 170.81)" dominant-baseline="middle">backend 22%</text>
+<path d="M306.83 229.69 A88 88 0 0 1 262.03 321.31 L244.84 289.69 A52 52 0 0 0 271.31 235.55 Z" fill="#5b21b6" stroke="#fff" stroke-width="1.5"/>
+<line x1="299.06" y1="282.65" x2="304.45" y2="285.29" stroke="#d1d5db" stroke-width="1"/>
+<text x="306.24" y="286.17" font-size="9.5" fill="#374151" text-anchor="start" transform="rotate(26.06 306.24 286.17)" dominant-baseline="middle">devtools 20%</text>
+<path d="M262.03 321.31 A88 88 0 0 1 190.57 326.93 L202.61 293.01 A52 52 0 0 0 244.84 289.69 Z" fill="#6d28d9" stroke="#fff" stroke-width="1.5"/>
+<line x1="226.90" y1="331.73" x2="227.37" y2="337.71" stroke="#d1d5db" stroke-width="1"/>
+<text x="227.52" y="339.70" font-size="9.5" fill="#374151" text-anchor="start" transform="rotate(85.50 227.52 339.70)" dominant-baseline="middle">knowledge 13%</text>
+<path d="M190.57 326.93 A88 88 0 0 1 150.70 298.23 L179.05 276.05 A52 52 0 0 0 202.61 293.01 Z" fill="#7c3aed" stroke="#fff" stroke-width="1.5"/>
+<line x1="168.59" y1="315.42" x2="165.08" y2="320.29" stroke="#d1d5db" stroke-width="1"/>
+<text x="163.92" y="321.91" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(305.75 163.92 321.91)" dominant-baseline="middle">frontend 9.0%</text>
+<path d="M150.70 298.23 A88 88 0 0 1 132.65 254.68 L168.38 250.31 A52 52 0 0 0 179.05 276.05 Z" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+<line x1="138.70" y1="277.69" x2="133.16" y2="279.98" stroke="#d1d5db" stroke-width="1"/>
+<text x="131.31" y="280.75" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(337.49 131.31 280.75)" dominant-baseline="middle">ml 8.6%</text>
+<path d="M132.65 254.68 A88 88 0 0 1 135.69 218.78 L170.18 229.10 A52 52 0 0 0 168.38 250.31 Z" fill="#a78bfa" stroke="#fff" stroke-width="1.5"/>
+<line x1="132.31" y1="236.57" x2="126.34" y2="236.07" stroke="#d1d5db" stroke-width="1"/>
+<text x="124.34" y="235.90" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(364.84 124.34 235.90)" dominant-baseline="middle">systems 6.6%</text>
+<path d="M135.69 218.78 A88 88 0 0 1 151.24 189.08 L179.37 211.55 A52 52 0 0 0 170.18 229.10 Z" fill="#c4b5fd" stroke="#fff" stroke-width="1.5"/>
+<line x1="142.04" y1="203.18" x2="136.72" y2="200.40" stroke="#d1d5db" stroke-width="1"/>
+<text x="134.95" y="199.47" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(387.63 134.95 199.47)" dominant-baseline="middle">data 6.1%</text>
+<path d="M151.24 189.08 A88 88 0 0 1 172.88 169.68 L192.16 200.08 A52 52 0 0 0 179.37 211.55 Z" fill="#d6ccfc" stroke="#fff" stroke-width="1.5"/>
+<line x1="161.25" y1="178.48" x2="157.25" y2="174.01" stroke="#d1d5db" stroke-width="1"/>
+<text x="155.91" y="172.52" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(408.12 155.91 172.52)" dominant-baseline="middle">filesystem 5.3%</text>
+<path d="M172.88 169.68 A88 88 0 0 1 193.35 160.13 L204.25 194.44 A52 52 0 0 0 192.16 200.08 Z" fill="#e7defb" stroke="#fff" stroke-width="1.5"/>
+<line x1="182.81" y1="164.25" x2="180.27" y2="158.81" stroke="#d1d5db" stroke-width="1"/>
+<text x="179.43" y="157.00" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(425.00 179.43 157.00)" dominant-baseline="middle">fullstack 4.1%</text>
+<path d="M193.35 160.13 A88 88 0 0 1 220.00 156.00 L220.00 192.00 A52 52 0 0 0 204.25 194.44 Z" fill="#cbd5e1" stroke="#fff" stroke-width="1.5"/>
+<line x1="206.52" y1="157.04" x2="205.60" y2="151.11" stroke="#d1d5db" stroke-width="1"/>
+<text x="205.29" y="149.13" font-size="9.5" fill="#374151" text-anchor="end" transform="rotate(441.19 205.29 149.13)" dominant-baseline="middle">other 4.9%</text>
+</svg>

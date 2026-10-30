@@ -1,0 +1,41 @@
+/* Site-shell glue for the ScienceVision post.
+
+   The article is authored as a standalone page, so these rules fit it into the blog's
+   container, prose and header rather than restyling the site around it. Everything the
+   page itself needs is in the sheets beside this one. */
+
+/* .markdown is sized and set in serif for prose; the article brings its own measure,
+   ground and type. Its width follows the article measure so the ground never shows as a
+   band beside the content, and it breaks out of .container (980px) to centre on the page. */
+.markdown:has(.sv-layout) {
+  width: min(calc(var(--sv-measure) + var(--sv-sidebar) + 40px), 94vw);
+  max-width: none;
+  margin: 0 0 0 50%;
+  transform: translateX(-50%);
+  background: var(--sv-ground);
+  color: var(--sv-ink);
+  font-family: var(--sv-sans);
+}
+
+/* The collaboration credit closes the hero, and the page styles those notes only inside
+   .sv-section. */
+.sv-hero p.sv-note {
+  max-width: 62ch;
+  margin: 18px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--sv-muted);
+}
+
+/* The site header is 72px; the page's own was 76px, and both the sticky rail and the
+   anchor offsets are measured from it. */
+:root {
+  --sv-header-height: 72px;
+}
+
+/* Below this width the page drops its reading rail and narrows to the measure alone. */
+@media (max-width: 1080px) {
+  .markdown:has(.sv-layout) {
+    width: min(var(--sv-measure), 94vw);
+  }
+}

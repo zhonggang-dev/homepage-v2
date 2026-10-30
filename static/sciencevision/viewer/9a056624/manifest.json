@@ -1,0 +1,77 @@
+{
+  "version": "9a056624",
+  "viewer_source": "ScienceVision-demo-B-20261014/viewer",
+  "cases": [
+    {
+      "discipline": "Architecture",
+      "task": "arch-rhl-access-al116-m07-ramp-run-between-decks",
+      "viewer": "gltf.html",
+      "assets": [
+        {
+          "name": "M07_ramp_run_between_decks.glb",
+          "source": "M07_ramp_run_between_decks.glb",
+          "bytes": 2748344,
+          "sha256": "a22abdaf13a4b35ec96f90400634f2300d04e241a54ccda591b8fa23b1e6fbbc"
+        }
+      ]
+    },
+    {
+      "discipline": "Biology",
+      "task": "sv-biol-bio_collision_check-0019",
+      "viewer": "molstar.html",
+      "assets": [
+        {
+          "name": "11LB.cif",
+          "source": "11LB.cif",
+          "bytes": 1217553,
+          "sha256": "ea1eca5424d29e471ed6af748b03da78ccae01fd683cf57639c9e67f1af32a46"
+        }
+      ]
+    },
+    {
+      "discipline": "Chemistry",
+      "task": "asset-24ac9048bb9f-crystallography-packing",
+      "viewer": "molstar.html",
+      "assets": [
+        {
+          "name": "sv3dqa_24ac9048bb9f.cif",
+          "source": "sv3dqa_24ac9048bb9f.cif",
+          "bytes": 5375,
+          "sha256": "24ac9048bb9f917cb1780e94098edaf2af1d1abfbb12e0aea8c506e76ae50e52"
+        }
+      ]
+    },
+    {
+      "discipline": "Mechanical CAD",
+      "task": "hard-045",
+      "viewer": "occt.html",
+      "assets": [
+        {
+          "name": "assembly.step",
+          "source": "assembly.step",
+          "bytes": 3008507,
+          "sha256": "2f0844169df89b2ad8462892e892a3cccaa2d0c72106bd47b79254d4a7472ebb"
+        }
+      ]
+    },
+    {
+      "discipline": "Medical imaging",
+      "task": "sv-medi-med_ct_geometry-0014",
+      "viewer": "niivue.html",
+      "assets": [
+        {
+          "name": "ct.nii.gz",
+          "source": "ct.nii.gz",
+          "bytes": 60738949,
+          "sha256": "a082fee18d7971a5356cab0faab5b5129372b6d7d438b895c3dbfafcbbf20920"
+        },
+        {
+          "name": "mask.nii.gz",
+          "source": "mask.nii.gz",
+          "bytes": 400239,
+          "sha256": "ff6bdbae6123bfd3ba6e1dcb90fa6691d41bb5e517452cc71586ffd8ab61ff82"
+        }
+      ]
+    }
+  ]
+}

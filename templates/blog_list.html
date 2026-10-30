@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block page_title %}Blog · UniPat AI{% endblock %}
+{% block meta_description %}Research from UniPat AI on models, agents and evaluation methods for real-world automation.{% endblock %}
+{% block og_title %}Blog · UniPat AI{% endblock %}
+
+{% block content %}
+<section class="phero" data-scene data-shape="helix" data-fx=".72" data-fs="1.05">
+    <div class="wrap"><div class="col">
+        <span class="mono">Blog</span>
+        <h1 data-split>Science and knowledge are <span class="soft">better when shared.</span></h1>
+        <p>Models, agents and evaluation methods from the UniPat team and collaborators.</p>
+        <div class="scroll"><i></i><span class="mono">{{ posts | length }} posts</span></div>
+    </div></div>
+</section>
+
+<section class="section" data-scene data-shape="plane" data-fx=".5" data-fy=".62" data-fs="1.8" data-fa=".3">
+    <div class="wrap">
+        {% for post in posts %}
+        {% set dated = post.meta.get('hidedate') != 'true' %}
+        {% if loop.first %}
+        <a class="feat" data-reveal href="{{ url_for('blog_detail', slug=post.slug) }}">
+            <div class="img"><img src="{{ post.header_image }}" alt=""></div>
+            <div>
+                <span class="mono">Latest{% if dated %} · {{ post.date.strftime('%b %d, %Y') }}{% endif %}</span>
+                <h2>{{ post.title }}</h2>
+                {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+                <span class="link">Read the post →</span>
+            </div>
+        </a>
+        <div class="posts" data-stagger>
+        {% else %}
+            <a class="p" data-reveal href="{{ url_for('blog_detail', slug=post.slug) }}">
+                <div class="img"><img src="{{ post.header_image }}" alt="" loading="lazy"></div>
+                <div>
+                    {% if dated %}<span class="mono">{{ post.date.strftime('%b %d, %Y') }}</span>{% endif %}
+                    <h3>{{ post.title }}</h3>
+                    {% if post.summary %}<p>{{ post.summary }}</p>{% endif %}
+                </div>
+            </a>
+        {% endif %}
+        {% if loop.last %}</div>{% endif %}
+        {% else %}
+        <p class="empty">No posts yet. Add Markdown files in <code>content/blog</code>.</p>
+        {% endfor %}
+    </div>
+</section>
+{% endblock %}

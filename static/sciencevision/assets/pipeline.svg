@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="392" viewBox="0 0 960 392" role="img" aria-labelledby="title desc">
+<title id="title">Construction pipeline and expert review</title>
+<desc id="desc">Automated checks match an asset to a task, probe it, construct candidate questions, screen them against rules and package a candidate bundle. Experts review and edit the questions, inspect the 3D evidence, record a reference answer and the route taken, then run quality review. Failed records return through a revision and recheck loop, by hand or by an agent, before export.</desc>
+<rect x="0" y="0" width="960" height="392" rx="0" fill="#ffffff"/>
+<rect x="20" y="16" width="920" height="156" rx="5" fill="#f5f9f7" stroke="#e1e8e4" stroke-width="1"/>
+<text x="36" y="36" fill="#147d64" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.25">01–03  AUTOMATED CONSTRUCTION</text>
+<line x1="36" y1="46" x2="924" y2="46" stroke="#e1e8e4" stroke-width="1.2" opacity="1"/>
+<rect x="114" y="58" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde5df" stroke-width="1"/>
+<line x1="128" y1="76" x2="128" y2="98" stroke="#147d64" stroke-width="2.5" opacity="1"/>
+<text x="140" y="80" fill="#147d64" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">01</text>
+<text x="140" y="101" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Match &amp; probe</text>
+<text x="140" y="123" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Asset–task eligibility</text>
+<text x="140" y="139" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Viewer checks</text>
+<rect x="390" y="58" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde5df" stroke-width="1"/>
+<line x1="404" y1="76" x2="404" y2="98" stroke="#147d64" stroke-width="2.5" opacity="1"/>
+<text x="416" y="80" fill="#147d64" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">02</text>
+<text x="416" y="101" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Construct candidates</text>
+<text x="416" y="123" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Templates · curated drafts</text>
+<text x="416" y="139" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Agent-assisted drafting</text>
+<rect x="666" y="58" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde5df" stroke-width="1"/>
+<line x1="680" y1="76" x2="680" y2="98" stroke="#147d64" stroke-width="2.5" opacity="1"/>
+<text x="692" y="80" fill="#147d64" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">03</text>
+<text x="692" y="101" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Check &amp; package</text>
+<text x="692" y="123" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Rule screening</text>
+<text x="692" y="139" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Deterministic selection</text>
+<rect x="20" y="200" width="920" height="176" rx="5" fill="#f4f6f9" stroke="#dfe3e8" stroke-width="1"/>
+<text x="36" y="220" fill="#375d7a" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="11" font-weight="700" text-anchor="start" letter-spacing="1.25">04–06  EXPERT PLATFORM</text>
+<line x1="36" y1="230" x2="924" y2="230" stroke="#dfe3e8" stroke-width="1.2" opacity="1"/>
+<rect x="666" y="242" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde3ea" stroke-width="1"/>
+<line x1="680" y1="260" x2="680" y2="282" stroke="#375d7a" stroke-width="2.5" opacity="1"/>
+<text x="692" y="264" fill="#375d7a" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">04</text>
+<text x="692" y="285" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Review &amp; edit</text>
+<text x="692" y="307" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Question validity</text>
+<text x="692" y="323" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Expert edits</text>
+<rect x="390" y="242" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde3ea" stroke-width="1"/>
+<line x1="404" y1="260" x2="404" y2="282" stroke="#375d7a" stroke-width="2.5" opacity="1"/>
+<text x="416" y="264" fill="#375d7a" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">05</text>
+<text x="416" y="285" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Inspect &amp; answer</text>
+<text x="416" y="307" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Orbit · isolate · measure</text>
+<text x="416" y="323" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Reference answer + route</text>
+<rect x="114" y="242" width="258" height="98" rx="4" fill="#ffffff" stroke="#dde3ea" stroke-width="1"/>
+<line x1="128" y1="260" x2="128" y2="282" stroke="#375d7a" stroke-width="2.5" opacity="1"/>
+<text x="140" y="264" fill="#375d7a" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="start" letter-spacing="0.8">06</text>
+<text x="140" y="285" fill="#243b32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="15.5" font-weight="600" text-anchor="start">Quality review</text>
+<text x="140" y="307" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Reference / trace checks</text>
+<text x="140" y="323" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="12" font-weight="400" text-anchor="start">Accept · return</text>
+<rect x="36" y="70" width="64" height="74" rx="4" fill="#ffffff" stroke="#147d64" stroke-width="1.2"/>
+<text x="68" y="98" fill="#147d64" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="8.5" font-weight="700" text-anchor="middle" letter-spacing="0.9">3D</text>
+<text x="68" y="117" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="9" font-weight="400" text-anchor="middle">assets</text>
+<text x="68" y="131" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="9" font-weight="400" text-anchor="middle">metadata</text>
+<rect x="36" y="254" width="64" height="74" rx="4" fill="#147d64" stroke="#147d64" stroke-width="1.2"/>
+<text x="68" y="282" fill="#ffffff" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="8.5" font-weight="700" text-anchor="middle" letter-spacing="0.9">EXPORT</text>
+<text x="68" y="301" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="9" font-weight="400" text-anchor="middle">reviewed</text>
+<text x="68" y="315" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="9" font-weight="400" text-anchor="middle">records</text>
+<line x1="100" y1="107" x2="110" y2="107" stroke="#147d64" stroke-width="1.2" opacity="1"/><polygon points="114,107 109.8,102.8 109.8,111.2" fill="#147d64"/>
+<line x1="924" y1="291" x2="914" y2="291" stroke="#375d7a" stroke-width="1.2" opacity="1"/><polygon points="910,291 914.2,286.8 914.2,295.2" fill="#375d7a"/>
+<line x1="372" y1="107" x2="386" y2="107" stroke="#147d64" stroke-width="1.2" opacity="1"/><polygon points="390,107 385.8,102.8 385.8,111.2" fill="#147d64"/>
+<line x1="648" y1="107" x2="662" y2="107" stroke="#147d64" stroke-width="1.2" opacity="1"/><polygon points="666,107 661.8,102.8 661.8,111.2" fill="#147d64"/>
+<line x1="666" y1="291" x2="652" y2="291" stroke="#375d7a" stroke-width="1.2" opacity="1"/><polygon points="648,291 652.2,286.8 652.2,295.2" fill="#375d7a"/>
+<line x1="390" y1="291" x2="376" y2="291" stroke="#375d7a" stroke-width="1.2" opacity="1"/><polygon points="372,291 376.2,286.8 376.2,295.2" fill="#375d7a"/>
+<line x1="795" y1="156" x2="795" y2="236" stroke="#243b32" stroke-width="1.6" opacity="1"/>
+<polygon points="795,242 790.4,237.4 799.6,237.4" fill="#243b32"/>
+<text x="778" y="184" fill="#243b32" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="10" font-weight="700" text-anchor="end" letter-spacing="1.1">CANDIDATE BUNDLE</text>
+<text x="778" y="198" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="10" font-weight="400" text-anchor="end">questions + assets</text>
+<path d="M243 340 V356 H795 V346" fill="none" stroke="#375d7a" stroke-width="1.1" stroke-dasharray="4 4" opacity="0.6"/>
+<polygon points="795,340 790.8,344.2 799.2,344.2" fill="#375d7a"/>
+<rect x="380" y="342" width="278" height="30" rx="0" fill="#f4f6f9"/>
+<text x="519" y="354" fill="#375d7a" font-family="'Space Mono', 'SF Mono', Menlo, monospace" font-size="9.5" font-weight="700" text-anchor="middle" letter-spacing="1.05">REVISE &amp; RECHECK</text>
+<text x="519" y="369" fill="#718078" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, sans-serif" font-size="9.4" font-weight="400" text-anchor="middle">questions · answers · records · human / agent</text>
+</svg>

@@ -1,0 +1,957 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect width='16' height='16' rx='3' fill='%230d1117'/%3E%3Cpath d='M2.5 12.5h11M3.5 12.5l4.5-9 4.5 9M5.6 9h4.8' stroke='%2358a6ff' stroke-width='1.3' stroke-linecap='round' fill='none'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Anonymous BIM coordination - ScienceVision</title>
+<link rel="stylesheet" href="./shared/style.css">
+<link rel="modulepreload" href="/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/build/three.module.js">
+<link rel="modulepreload" href="/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/examples/jsm/loaders/GLTFLoader.js">
+<link rel="modulepreload" href="/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/examples/jsm/controls/OrbitControls.js">
+<script type="importmap">
+{
+  "imports": {
+    "three": "/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/build/three.module.js",
+    "three/addons/": "/static/sciencevision/viewer/9a056624/shared/vendor/three/0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin: 0; width: 100%; height: 100%; overflow: hidden; background: #0d1117; }
+  #scene { position: fixed; inset: 49px 0 0; width: 100vw; height: calc(100vh - 49px); display: block; }
+  #tools, #status, #selection {
+    position: fixed; z-index: 5; border: 1px solid var(--border); border-radius: 4px;
+    background: rgba(13,17,23,.94); font: 11px/1.45 ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+  #tools { top: 61px; left: 12px; width: 262px; max-height: calc(100vh - 86px); padding: 11px 12px; overflow: auto; }
+  #tools h2, #selection h2 { margin: 0 0 7px; color: #f0f6fc; font-size: 11px; }
+  .section { margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .segmented, .commands, #candidate-controls { display: grid; gap: 5px; }
+  .segmented { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .commands { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #candidate-controls { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  button {
+    min-width: 0; min-height: 28px; padding: 4px 6px; border: 1px solid var(--border); border-radius: 3px;
+    color: var(--fg-dim); background: var(--bg); cursor: pointer; font: inherit;
+  }
+  button:hover, button[aria-pressed="true"] { border-color: #58a6ff; color: #f0f6fc; }
+  button[aria-pressed="true"] { background: rgba(88,166,255,.14); }
+  .candidate { display: flex; align-items: center; justify-content: flex-start; gap: 7px; }
+  .swatch { width: 9px; height: 9px; flex: 0 0 auto; border-radius: 2px; }
+  label.range { display: grid; grid-template-columns: 1fr auto; gap: 4px 8px; color: var(--fg-dim); }
+  label.range input { grid-column: 1 / -1; width: 100%; accent-color: #58a6ff; }
+  label.toggle { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; color: var(--fg); }
+  #selection { top: 61px; right: 12px; width: min(310px, calc(100vw - 310px)); padding: 10px 12px; color: var(--fg-dim); }
+  #selection b { color: #f0f6fc; }
+  #status { left: 12px; bottom: 12px; max-width: calc(100vw - 24px); padding: 7px 10px; color: var(--fg-dim); }
+  #status strong { color: #58a6ff; }
+  .error-box { position: fixed; inset: 49px 0 0; z-index: 20; padding: 24px; color: #ff7b72; background: #0d1117; white-space: pre-wrap; }
+  @media (max-width: 560px) {
+    header.topbar > .meta { display: none; }
+    #scene { inset: 252px 0 128px; height: calc(100vh - 380px); }
+    #tools {
+      top: 57px; left: 8px; width: calc(100vw - 16px); max-height: none; padding: 8px;
+      display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 8px; overflow: visible;
+    }
+    #tools .section { min-width: 0; margin: 0; padding: 0 0 6px; }
+    #tools > .commands { grid-column: 1 / -1; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    #tools button { padding-inline: 3px; font-size: 10px; }
+    #tools .candidate { gap: 4px; }
+    #selection { top: auto; right: 8px; bottom: 8px; left: 8px; width: auto; max-height: 112px; overflow: auto; }
+    #status { display: none; }
+  }
+  /* Narrow but not a phone: the review page's side-by-side workspace hands this
+     viewer a ~614px iframe on a 1280x800 laptop. Keep the canvas at full height
+     and shrink the floating panels instead, which is what the sibling
+     architecture_inspection.html does at the same width. */
+  @media (min-width: 561px) and (max-width: 720px) {
+    header.topbar > .meta { display: none; }
+    #tools { top: 57px; left: 8px; width: 206px; max-height: calc(100vh - 74px); padding: 9px 10px; }
+    #tools .segmented { gap: 4px; }
+    #tools button { padding-inline: 3px; font-size: 10px; }
+    #candidate-controls { grid-template-columns: minmax(0, 1fr); }
+    #selection { top: auto; right: 8px; bottom: 8px; left: 222px; width: auto; max-height: 132px; overflow: auto; }
+    #status { display: none; }
+  }
+  @media (max-width: 560px) and (max-height: 520px) {
+    html { height: 100%; overflow: auto; }
+    body {
+      display: grid; grid-template-rows: 49px auto 320px auto;
+      height: auto; min-height: 100%; overflow: auto;
+    }
+    header.topbar { position: sticky; top: 0; z-index: 10; grid-row: 1; }
+    #tools {
+      position: relative; inset: auto; grid-row: 2;
+      width: auto; max-height: none; margin: 8px; overflow: visible;
+    }
+    #scene {
+      position: relative; inset: auto; grid-row: 3;
+      width: 100%; height: 320px;
+    }
+    #selection {
+      position: relative; inset: auto; grid-row: 4;
+      width: auto; max-height: none; margin: 8px; overflow: visible;
+    }
+  }
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div><a class="back" href="./index.html">Back</a><strong>Anonymous BIM Coordination</strong> <span id="task-label" class="meta"></span></div>
+  <div class="meta">AABB envelope screen · OrbitControls</div>
+</header>
+<canvas id="scene"></canvas>
+<aside id="tools">
+  <section class="section">
+    <h2>Orthographic view</h2>
+    <div id="view-controls" class="segmented">
+      <button type="button" data-view="iso" aria-pressed="true">Iso</button>
+      <button type="button" data-view="plan" aria-pressed="false">Plan</button>
+      <button type="button" data-view="front" aria-pressed="false">Front</button>
+      <button type="button" data-view="side" aria-pressed="false">Side</button>
+    </div>
+  </section>
+  <section class="section">
+    <h2>Anonymous candidates</h2>
+    <div id="candidate-controls">loading...</div>
+  </section>
+  <section class="section">
+    <label class="range">Model opacity <output id="model-opacity-value">0.72</output><input id="model-opacity" type="range" min="0.12" max="1" step="0.02" value="0.72"></label>
+  </section>
+  <section class="section">
+    <label class="toggle"><input id="ground-visible" type="checkbox" checked> Ground</label>
+    <label class="toggle"><input id="envelopes-visible" type="checkbox"> Envelopes</label>
+  </section>
+  <div class="commands">
+    <button id="fit-view" type="button">Fit</button>
+    <button id="annotate" type="button" aria-pressed="false">Annotate</button>
+    <button id="clear" type="button">Clear</button>
+    <button id="capture" type="button">Capture</button>
+    <button id="trace" type="button">Trace</button>
+    <button id="all-models" type="button" aria-pressed="true">All</button>
+  </div>
+</aside>
+<aside id="selection"><h2>Evidence</h2><div id="selection-value">Click a candidate to inspect visible geometry.</div></aside>
+<div id="status"><strong id="stats">loading...</strong></div>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { frameClearOfPanels } from './shared/panel-safe-frame.js';
+
+const params = new URLSearchParams(location.search);
+const manifestParam = params.get('manifest') || '../bundle_manifest.json';
+const taskId = params.get('task_id') || params.get('task') || '';
+const sessionId = params.get('session_id') || 'standalone';
+const viewerMode = 'evaluation';
+const protocolVersion = 'v1';
+const messageSchema = 'sciencevision.viewer_message.v1';
+const parentWindow = window.parent !== window ? window.parent : null;
+const requestedParentOrigin = params.get('parent_origin');
+let parentOrigin = location.origin;
+if (requestedParentOrigin) {
+  try {
+    const parsedParentOrigin = new URL(requestedParentOrigin, location.href).origin;
+    if (parsedParentOrigin !== 'null') parentOrigin = parsedParentOrigin;
+  } catch {
+    // Invalid parent origins never relax the same-origin default.
+  }
+}
+const nodes = {
+  task: document.getElementById('task-label'),
+  candidates: document.getElementById('candidate-controls'),
+  views: document.getElementById('view-controls'),
+  opacity: document.getElementById('model-opacity'),
+  opacityValue: document.getElementById('model-opacity-value'),
+  groundVisible: document.getElementById('ground-visible'),
+  envelopesVisible: document.getElementById('envelopes-visible'),
+  selection: document.getElementById('selection-value'),
+  stats: document.getElementById('stats'),
+  all: document.getElementById('all-models'),
+  annotate: document.getElementById('annotate'),
+};
+nodes.task.textContent = taskId || 'task not selected';
+
+function parseJSONL(text) {
+  return text.split(/\r?\n/).map(line => line.trim()).filter(Boolean).map(line => JSON.parse(line));
+}
+
+function safeAssetPath(asset) {
+  const raw = String(asset.repo_path || asset.path || '').replace(/^\/+/, '');
+  if (!raw || raw.split('/').includes('..')) throw new Error('Task contains an unsafe asset path.');
+  return raw;
+}
+
+function downloadBlob(name, blob) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 0);
+}
+
+const canvas = document.getElementById('scene');
+const renderer = new THREE.WebGLRenderer({canvas, antialias: true});
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0d1117);
+scene.add(new THREE.HemisphereLight(0xe6f1ff, 0x1b2028, 2.2));
+const key = new THREE.DirectionalLight(0xffffff, 2.8);
+key.position.set(10, 16, 12);
+scene.add(key);
+const grid = new THREE.GridHelper(30, 30, 0x30363d, 0x21262d);
+grid.name = 'Ground grid';
+scene.add(grid);
+scene.add(new THREE.AxesHelper(1.2));
+
+const perspective = new THREE.PerspectiveCamera(42, canvas.clientWidth / canvas.clientHeight, 0.01, 10000);
+perspective.up.set(0, 1, 0);
+const orthographic = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.01, 10000);
+let activeCamera = perspective;
+const controls = new OrbitControls(perspective, canvas);
+controls.enableDamping = true;
+controls.target.set(0, 0, 0);
+
+const candidatePalette = [0x58a6ff, 0xf2cc60, 0x56d364, 0xdb61a2];
+const loader = new GLTFLoader();
+const models = [];
+const pickables = [];
+const envelopes = [];
+const annotationRoot = new THREE.Group();
+scene.add(annotationRoot);
+const annotations = [];
+const operations = [];
+const captures = [];
+const startedAt = performance.now();
+let annotating = false;
+let currentView = 'iso';
+let loadedTask = null;
+let viewerReady = false;
+let messageSequence = 0;
+let captureSequence = 0;
+let activeRequirementId = params.get('requirement_id') || null;
+let activeSemanticRole = params.get('semantic_role') || null;
+window.__SV_BIM_TRACE__ = operations;
+
+function rounded(value) {
+  return Number(Number(value).toFixed(6));
+}
+
+function vectorState(vector) {
+  return vector.toArray().map(rounded);
+}
+
+function deepFreeze(value) {
+  if (!value || typeof value !== 'object' || Object.isFrozen(value)) return value;
+  Object.freeze(value);
+  for (const child of Object.values(value)) deepFreeze(child);
+  return value;
+}
+
+function immutable(value) {
+  return deepFreeze(JSON.parse(JSON.stringify(value)));
+}
+
+function viewportState() {
+  return {
+    css_width: canvas.clientWidth,
+    css_height: canvas.clientHeight,
+    drawing_buffer_width: canvas.width,
+    drawing_buffer_height: canvas.height,
+    pixel_ratio: renderer.getPixelRatio(),
+  };
+}
+
+function cameraState() {
+  const state = {
+    type: activeCamera.isOrthographicCamera ? 'orthographic' : 'perspective',
+    projection: activeCamera.isOrthographicCamera ? 'orthographic' : 'perspective',
+    current_view: currentView,
+    position: vectorState(activeCamera.position),
+    target: vectorState(controls.target),
+    up: vectorState(activeCamera.up),
+    near: rounded(activeCamera.near),
+    far: rounded(activeCamera.far),
+    zoom: rounded(activeCamera.zoom),
+    viewport: viewportState(),
+  };
+  if (activeCamera.isOrthographicCamera) {
+    state.parameters = {
+      left: rounded(activeCamera.left), right: rounded(activeCamera.right),
+      top: rounded(activeCamera.top), bottom: rounded(activeCamera.bottom),
+    };
+  } else {
+    state.parameters = {fov: rounded(activeCamera.fov), aspect: rounded(activeCamera.aspect)};
+  }
+  return state;
+}
+
+function boundsState(bounds) {
+  if (!bounds || bounds.isEmpty()) return null;
+  return {
+    min: vectorState(bounds.min),
+    max: vectorState(bounds.max),
+    size: vectorState(bounds.getSize(new THREE.Vector3())),
+  };
+}
+
+function bimState() {
+  const candidates = models.map((model, index) => ({
+    candidate_id: `candidate-${String.fromCharCode(97 + index)}`,
+    label: model.label,
+    visible: Boolean(model.root.visible),
+    opacity: Number(nodes.opacity.value),
+    envelope_visible: Boolean(envelopes[index]?.visible),
+    bounds: boundsState(model.bounds),
+    geometry_filter: model.geometryFilter ? {...model.geometryFilter} : null,
+  }));
+  const snapshot = immutable({
+    viewer: 'bim_coordination',
+    loaded: Boolean(loadedTask),
+    mode: viewerMode,
+    task_id: taskId,
+    session_id: sessionId,
+    active_requirement: activeRequirementId ? {
+      requirement_id: activeRequirementId,
+      semantic_role: activeSemanticRole,
+    } : null,
+    scene: {
+      task_id: loadedTask?.task_id || taskId || null,
+      manifest: manifestParam,
+      model_count: models.length,
+      coordinate_frame: {
+        up_axis: 'Y',
+        ground_plane: 'XZ',
+        plan_view_direction: '+Y_to_-Y',
+        front_view_direction: '+Z_to_-Z',
+        side_view_direction: '-X_to_+X',
+      },
+    },
+    camera: cameraState(),
+    candidates,
+    visible_candidates: candidates.filter(candidate => candidate.visible).map(candidate => candidate.candidate_id),
+    opacities: Object.fromEntries(candidates.map(candidate => [candidate.candidate_id, candidate.opacity])),
+    ground: {
+      visible: Boolean(grid.visible),
+      plane: 'XZ',
+      position: vectorState(grid.position),
+      scale: vectorState(grid.scale),
+    },
+    envelopes: {
+      enabled: Boolean(nodes.envelopesVisible.checked),
+      visible_candidates: candidates.filter(candidate => candidate.envelope_visible).map(candidate => candidate.candidate_id),
+    },
+    geometry_filters: candidates.map(candidate => ({
+      candidate_id: candidate.candidate_id,
+      ...candidate.geometry_filter,
+    })),
+    tools: {annotating},
+    annotations,
+    measurements: [],
+    notes: [],
+    reference: {available: false, revealed: false},
+    operation_count: operations.length,
+    capture_count: captures.length,
+  });
+  window.__SV_BIM_STATE__ = snapshot;
+  return snapshot;
+}
+
+function postViewerMessage(type, payload = {}) {
+  if (!parentWindow) return null;
+  const message = immutable({
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    type,
+    task_id: taskId,
+    session_id: sessionId,
+    mode: viewerMode,
+    sequence: ++messageSequence,
+    ...payload,
+  });
+  parentWindow.postMessage(message, parentOrigin);
+  return message;
+}
+
+function sendSnapshot(reason, requestId = null, extra = {}) {
+  const snapshot = bimState();
+  postViewerMessage('viewer.snapshot', {
+    request_id: requestId,
+    reason,
+    complete: true,
+    snapshot,
+    ...extra,
+  });
+  return snapshot;
+}
+
+function record(action, details = {}) {
+  const operation = {
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    sequence: operations.length + 1,
+    task_id: taskId,
+    session_id: sessionId,
+    mode: viewerMode,
+    elapsed_ms: Math.round(performance.now() - startedAt),
+    action,
+    details: immutable(details),
+    complete: true,
+    final_state: null,
+  };
+  operations.push(operation);
+  operation.final_state = bimState();
+  deepFreeze(operation);
+  postViewerMessage('viewer.operation', {
+    complete: true,
+    operation,
+    snapshot: operation.final_state,
+    annotations: operation.final_state.annotations,
+    measurements: operation.final_state.measurements,
+    notes: operation.final_state.notes,
+  });
+  return operation;
+}
+
+function safeFilePart(value, fallback) {
+  const result = String(value || '').trim().replace(/[^A-Za-z0-9._-]+/g, '-').replace(/^-+|-+$/g, '');
+  return result || fallback;
+}
+
+function nextCaptureId() {
+  captureSequence += 1;
+  const entropy = globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${captureSequence}`;
+  return `capture-${entropy}`;
+}
+
+function nextEvidenceId(kind) {
+  const entropy = globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+  return `${kind}-${entropy}`;
+}
+
+function canvasBlob() {
+  return new Promise((resolve, reject) => {
+    renderer.render(scene, activeCamera);
+    const output = document.createElement('canvas');
+    output.width = canvas.width;
+    output.height = canvas.height;
+    const context = output.getContext('2d');
+    context.drawImage(canvas, 0, 0, output.width, output.height);
+    output.toBlob(blob => blob ? resolve(blob) : reject(new Error('Canvas capture failed.')), 'image/png');
+  });
+}
+
+async function sha256Hex(blob) {
+  const digest = await crypto.subtle.digest('SHA-256', await blob.arrayBuffer());
+  return Array.from(new Uint8Array(digest), value => value.toString(16).padStart(2, '0')).join('');
+}
+
+function blobDataURL(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result));
+    reader.onerror = () => reject(reader.error || new Error('Unable to encode capture.'));
+    reader.readAsDataURL(blob);
+  });
+}
+
+async function captureEvidence({slotId = 'manual', requestId = null, download = false} = {}) {
+  const captureId = nextCaptureId();
+  const safeSlot = safeFilePart(slotId, 'evidence');
+  const filenameValue = `${safeFilePart(taskId, 'bim')}-${safeSlot}-${safeFilePart(captureId, 'capture')}.png`;
+  const snapshot = sendSnapshot('pre_capture', requestId, {capture_id: captureId, slot_id: safeSlot});
+  const blob = await canvasBlob();
+  const [sha256, dataUrl] = await Promise.all([sha256Hex(blob), blobDataURL(blob)]);
+  const capture = immutable({
+    capture_id: captureId,
+    slot_id: safeSlot,
+    filename: filenameValue,
+    mime_type: 'image/png',
+    captured_at: new Date().toISOString(),
+    byte_length: blob.size,
+    sha256,
+    data_url: dataUrl,
+    width: canvas.width,
+    height: canvas.height,
+    dimensions: {width: canvas.width, height: canvas.height},
+    snapshot,
+  });
+  captures.push(immutable({...capture, data_url: undefined}));
+  record('capture_view', {capture_id: captureId, slot_id: safeSlot, filename: filenameValue, sha256});
+  postViewerMessage('viewer.capture', {request_id: requestId, slot_id: safeSlot, complete: true, capture});
+  if (download) downloadBlob(filenameValue, blob);
+  return capture;
+}
+
+function visibleBounds() {
+  const bounds = new THREE.Box3();
+  for (const model of models) if (model.root.visible) bounds.union(model.bounds);
+  return bounds;
+}
+
+function applyGeometryFilter(root, filter) {
+  filter = filter || {};
+  const excludedGuids = new Set(
+    Array.isArray(filter.excluded_node_guids)
+      ? filter.excluded_node_guids.map(value => String(value))
+      : [],
+  );
+  const removed = [];
+  root.traverse(object => {
+    if (excludedGuids.has(String(object.name || ''))) removed.push(object);
+  });
+  for (const object of removed) object.parent?.remove(object);
+  root.updateMatrixWorld(true);
+  return {
+    rule: String(filter.rule || 'none'),
+    declared_count: excludedGuids.size,
+    removed_count: removed.length,
+  };
+}
+
+function updateSceneGuides() {
+  const bounds = visibleBounds();
+  if (bounds.isEmpty()) {
+    grid.visible = false;
+    for (const envelope of envelopes) envelope.visible = false;
+    return;
+  }
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const clearance = Math.max(size.length() * .002, .01);
+  const groundExtent = Math.max(size.x, size.z, 10) * 1.5;
+  grid.position.set(center.x, bounds.min.y - clearance, center.z);
+  grid.scale.setScalar(groundExtent / 30);
+  grid.visible = nodes.groundVisible.checked;
+  for (const [index, envelope] of envelopes.entries()) {
+    envelope.visible = nodes.envelopesVisible.checked && models[index].root.visible;
+  }
+  const coordinateFrameState = {
+    coordinate_frame: {
+      up_axis: 'Y',
+      ground_plane: 'XZ',
+      plan_view_direction: '+Y_to_-Y',
+      front_view_direction: '+Z_to_-Z',
+      side_view_direction: '-X_to_+X',
+    },
+    visible_candidates: models.filter(model => model.root.visible).map(model => model.label),
+    ground_visible: grid.visible,
+    envelopes_visible: nodes.envelopesVisible.checked,
+    geometry_filters: models.map(model => ({candidate: model.label, ...model.geometryFilter})),
+  };
+  canvas.dataset.coordinateFrame = JSON.stringify(coordinateFrameState);
+  window.__SV_BIM_STATE__ = bimState();
+}
+
+function applyModelOpacity(value) {
+  for (const model of models) {
+    model.root.traverse(object => {
+      if (!object.isMesh) return;
+      object.material.transparent = value < 0.999;
+      object.material.opacity = value;
+      object.material.depthWrite = value > 0.62;
+      object.material.needsUpdate = true;
+    });
+  }
+}
+
+// The tool and evidence panels float over the canvas, so a fit measured against
+// the canvas rectangle alone can leave part of the model behind an opaque panel.
+function clearPanels(camera, bounds) {
+  frameClearOfPanels({
+    THREE,
+    canvas,
+    camera,
+    target: controls.target,
+    bounds,
+    panels: ['tools', 'selection', 'status'].map(id => document.getElementById(id)),
+  });
+}
+
+function fitPerspective(direction = new THREE.Vector3(1, .82, 1)) {
+  const bounds = visibleBounds();
+  if (bounds.isEmpty()) return;
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.length() * .5, .5);
+  const aspect = canvas.clientWidth / Math.max(canvas.clientHeight, 1);
+  const halfVerticalFov = THREE.MathUtils.degToRad(perspective.fov * .5);
+  const halfHorizontalFov = Math.atan(Math.tan(halfVerticalFov) * aspect);
+  const limitingHalfFov = Math.max(Math.min(halfVerticalFov, halfHorizontalFov), .01);
+  const distance = radius / Math.sin(limitingHalfFov) * 1.15;
+  perspective.position.copy(center).add(direction.normalize().multiplyScalar(distance));
+  perspective.up.set(0, 1, 0);
+  perspective.near = Math.max(distance - radius * 2, .005);
+  perspective.far = distance + radius * 4;
+  perspective.updateProjectionMatrix();
+  controls.target.copy(center);
+  clearPanels(perspective, bounds);
+  controls.enabled = true;
+  controls.update();
+  activeCamera = perspective;
+}
+
+function fitOrthographic(view) {
+  const bounds = visibleBounds();
+  if (bounds.isEmpty()) return;
+  const size = bounds.getSize(new THREE.Vector3());
+  const center = bounds.getCenter(new THREE.Vector3());
+  const radius = Math.max(size.length() * .5, .5);
+  const config = {
+    plan: {direction: new THREE.Vector3(0, 1, 0), up: new THREE.Vector3(0, 0, -1), width: size.x, height: size.z},
+    front: {direction: new THREE.Vector3(0, 0, 1), up: new THREE.Vector3(0, 1, 0), width: size.x, height: size.y},
+    side: {direction: new THREE.Vector3(-1, 0, 0), up: new THREE.Vector3(0, 1, 0), width: size.z, height: size.y},
+  }[view];
+  const aspect = canvas.clientWidth / Math.max(canvas.clientHeight, 1);
+  const halfHeight = Math.max(config.height / 2, config.width / (2 * aspect), .5) * 1.15;
+  orthographic.left = -halfHeight * aspect;
+  orthographic.right = halfHeight * aspect;
+  orthographic.top = halfHeight;
+  orthographic.bottom = -halfHeight;
+  orthographic.near = .001;
+  orthographic.far = radius * 12;
+  orthographic.position.copy(center).add(config.direction.normalize().multiplyScalar(radius * 4));
+  orthographic.up.copy(config.up);
+  orthographic.lookAt(center);
+  orthographic.updateProjectionMatrix();
+  controls.target.copy(center);
+  clearPanels(orthographic, bounds);
+  controls.enabled = false;
+  activeCamera = orthographic;
+}
+
+function setView(view, shouldRecord = true) {
+  currentView = view;
+  if (view === 'iso') fitPerspective();
+  else if (view === 'custom') {
+    const direction = perspective.position.clone().sub(controls.target);
+    fitPerspective(direction.lengthSq() ? direction : new THREE.Vector3(1, .82, 1));
+  } else fitOrthographic(view);
+  for (const button of nodes.views.querySelectorAll('[data-view]')) {
+    button.setAttribute('aria-pressed', button.dataset.view === view ? 'true' : 'false');
+  }
+  if (shouldRecord) record('set_view', {view});
+}
+
+function showAll(shouldRecord = true) {
+  for (const model of models) model.root.visible = true;
+  nodes.all.setAttribute('aria-pressed', 'true');
+  for (const button of nodes.candidates.querySelectorAll('[data-candidate]')) button.setAttribute('aria-pressed', 'false');
+  updateSceneGuides();
+  setView(currentView, false);
+  if (shouldRecord) record('show_common_frame', {candidates: models.length});
+}
+
+function showSolo(index) {
+  for (const [current, model] of models.entries()) model.root.visible = current === index;
+  nodes.all.setAttribute('aria-pressed', 'false');
+  for (const button of nodes.candidates.querySelectorAll('[data-candidate]')) {
+    button.setAttribute('aria-pressed', Number(button.dataset.candidate) === index ? 'true' : 'false');
+  }
+  updateSceneGuides();
+  setView(currentView, false);
+  record('show_candidate', {candidate: models[index].label});
+}
+
+function restoreState(snapshot, requestId = null) {
+  if (!snapshot || snapshot.viewer !== 'bim_coordination' || snapshot.task_id !== taskId || snapshot.session_id !== sessionId || snapshot.mode !== viewerMode) return;
+  const visible = new Set(Array.isArray(snapshot.visible_candidates) ? snapshot.visible_candidates : []);
+  if (visible.size) {
+    for (const [index, model] of models.entries()) model.root.visible = visible.has(`candidate-${String.fromCharCode(97 + index)}`);
+    nodes.all.setAttribute('aria-pressed', models.every(model => model.root.visible) ? 'true' : 'false');
+    for (const button of nodes.candidates.querySelectorAll('[data-candidate]')) {
+      button.setAttribute('aria-pressed', models[Number(button.dataset.candidate)]?.root.visible ? 'true' : 'false');
+    }
+  }
+  const opacity = Number(Object.values(snapshot.opacities || {})[0]);
+  if (Number.isFinite(opacity)) {
+    nodes.opacity.value = String(opacity);
+    nodes.opacityValue.textContent = opacity.toFixed(2);
+    applyModelOpacity(opacity);
+  }
+  if (typeof snapshot.ground?.visible === 'boolean') nodes.groundVisible.checked = snapshot.ground.visible;
+  if (typeof snapshot.envelopes?.enabled === 'boolean') nodes.envelopesVisible.checked = snapshot.envelopes.enabled;
+  updateSceneGuides();
+  const view = snapshot.camera?.current_view;
+  setView(['iso', 'plan', 'front', 'side', 'custom'].includes(view) ? view : 'iso', false);
+  const operation = record('restore_state', {source: 'parent_draft'});
+  sendSnapshot('state_restored', requestId, {operation_sequence: operation.sequence});
+}
+
+function renderCandidateControls() {
+  nodes.candidates.innerHTML = models.map((model, index) => `<button class="candidate" type="button" data-candidate="${index}" aria-pressed="false"><span class="swatch" style="background:#${candidatePalette[index % candidatePalette.length].toString(16).padStart(6, '0')}"></span>${model.label}</button>`).join('');
+  for (const button of nodes.candidates.querySelectorAll('[data-candidate]')) {
+    button.addEventListener('click', () => showSolo(Number(button.dataset.candidate)));
+  }
+}
+
+function anonymizeModel(root, index) {
+  const color = candidatePalette[index % candidatePalette.length];
+  root.name = `Candidate ${String.fromCharCode(65 + index)}`;
+  root.traverse(object => {
+    if (!object.isMesh) return;
+    object.material = new THREE.MeshStandardMaterial({
+      color, roughness: .72, metalness: .04, transparent: true, opacity: Number(nodes.opacity.value),
+      side: THREE.DoubleSide, depthWrite: Number(nodes.opacity.value) > .62,
+    });
+    object.userData.candidateIndex = index;
+    pickables.push(object);
+  });
+}
+
+async function load() {
+  const manifestURL = new URL(manifestParam, location.href);
+  const manifestResponse = await fetch(manifestURL, {cache: 'no-store'});
+  if (!manifestResponse.ok) throw new Error('Bundle manifest failed to load.');
+  const manifest = await manifestResponse.json();
+  const tasksResponse = await fetch(new URL(manifest.tasks_jsonl, manifestURL), {cache: 'no-store'});
+  if (!tasksResponse.ok) throw new Error('Task data failed to load.');
+  const task = parseJSONL(await tasksResponse.text()).find(row => row.task_id === taskId);
+  if (!task) throw new Error('Requested task was not found.');
+  const assets = (Array.isArray(task.assets) ? task.assets : [task.asset]).filter(Boolean);
+  const modelAssets = assets.filter(asset => /\.gltf?$/i.test(safeAssetPath(asset)) || ['glb', 'gltf'].includes(String(asset.format || '').toLowerCase()));
+  if (!modelAssets.length) throw new Error('Task has no candidate models.');
+  const geometryFilter = task.bim_coordination_contract?.geometry_filter;
+  if (!geometryFilter || !Array.isArray(geometryFilter.excluded_node_guids)) {
+    throw new Error('Task has no valid BIM geometry filter.');
+  }
+
+  await Promise.all(modelAssets.map(async (asset, index) => {
+    const label = `Candidate ${String.fromCharCode(65 + index)}`;
+    try {
+      const result = await loader.loadAsync(new URL(safeAssetPath(asset), manifestURL).href);
+      const appliedGeometryFilter = applyGeometryFilter(result.scene, geometryFilter);
+      anonymizeModel(result.scene, index);
+      scene.add(result.scene);
+      const bounds = new THREE.Box3().setFromObject(result.scene, true);
+      if (bounds.isEmpty()) throw new Error('filtered model has no visible geometry');
+      const envelope = new THREE.Box3Helper(bounds.clone(), candidatePalette[index % candidatePalette.length]);
+      envelope.name = `${label} envelope`;
+      envelope.visible = false;
+      envelope.userData.nonPickableHelper = true;
+      scene.add(envelope);
+      envelopes[index] = envelope;
+      models[index] = {root: result.scene, label, bounds, geometryFilter: appliedGeometryFilter};
+    } catch (error) {
+      throw new Error(`${label} failed to load.`);
+    }
+  }));
+  renderCandidateControls();
+  showAll(false);
+  applyModelOpacity(Number(nodes.opacity.value));
+  setView('iso', false);
+  loadedTask = task;
+  nodes.stats.textContent = `${models.length} anonymous candidate${models.length === 1 ? '' : 's'} · AABB is broad-phase only`;
+  record('open_multi_scene', {
+    task_id: taskId,
+    candidates: models.length,
+    coordinate_frame: 'Y-up',
+    geometry_filters_applied: models.map(model => model.geometryFilter.removed_count),
+  });
+}
+
+nodes.views.addEventListener('click', event => {
+  const button = event.target.closest('[data-view]');
+  if (button) setView(button.dataset.view);
+});
+nodes.all.addEventListener('click', () => showAll());
+document.getElementById('fit-view').addEventListener('click', () => {
+  setView(currentView, false);
+  record('fit_visible');
+});
+nodes.opacity.addEventListener('input', () => {
+  nodes.opacityValue.textContent = Number(nodes.opacity.value).toFixed(2);
+  applyModelOpacity(Number(nodes.opacity.value));
+});
+nodes.opacity.addEventListener('change', () => record('set_model_opacity', {opacity: Number(nodes.opacity.value)}));
+nodes.groundVisible.addEventListener('change', () => {
+  updateSceneGuides();
+  record('toggle_ground', {visible: nodes.groundVisible.checked});
+});
+nodes.envelopesVisible.addEventListener('change', () => {
+  updateSceneGuides();
+  record('toggle_envelopes', {visible: nodes.envelopesVisible.checked});
+});
+nodes.annotate.addEventListener('click', () => {
+  annotating = !annotating;
+  nodes.annotate.setAttribute('aria-pressed', annotating ? 'true' : 'false');
+  record('set_annotation_mode', {enabled: annotating});
+});
+
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+let pointerStart = null;
+function isEffectivelyVisible(object) {
+  for (let node = object; node; node = node.parent) if (!node.visible) return false;
+  return true;
+}
+canvas.addEventListener('pointerdown', event => { pointerStart = {x: event.clientX, y: event.clientY, id: event.pointerId}; });
+canvas.addEventListener('pointerup', event => {
+  if (!pointerStart || pointerStart.id !== event.pointerId) return;
+  const moved = Math.hypot(event.clientX - pointerStart.x, event.clientY - pointerStart.y);
+  pointerStart = null;
+  if (moved > 4) return;
+  const rect = canvas.getBoundingClientRect();
+  pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+  raycaster.setFromCamera(pointer, activeCamera);
+  const hit = raycaster.intersectObjects(pickables.filter(isEffectivelyVisible), false)[0];
+  if (!hit) return;
+  const index = hit.object.userData.candidateIndex;
+  const label = models[index]?.label || 'Candidate';
+  if (!annotating) {
+    nodes.selection.innerHTML = `<b>${label}</b><br>Visible geometry selected. Enable Annotate to place evidence markers.`;
+    record('select_geometry', {candidate: label});
+    return;
+  }
+  const marker = new THREE.Mesh(new THREE.SphereGeometry(Math.max(visibleBounds().getSize(new THREE.Vector3()).length() * .006, .02), 16, 12), new THREE.MeshBasicMaterial({color: 0xffffff, depthTest: false}));
+  marker.position.copy(hit.point);
+  marker.renderOrder = 30;
+  annotationRoot.add(marker);
+  const annotation = {
+    annotation_id: nextEvidenceId('annotation'),
+    requirement_id: activeRequirementId,
+    semantic_role: activeSemanticRole,
+    unassigned: !activeRequirementId,
+    index: annotations.length + 1,
+    candidate: label,
+    point_m: hit.point.toArray().map(value => Number(value.toFixed(6))),
+  };
+  annotations.push(annotation);
+  nodes.selection.innerHTML = `<b>Annotation ${annotation.index}</b><br>${label}<br>${annotation.point_m.map(value => value.toFixed(3)).join(', ')} m`;
+  record('annotate_point', annotation);
+});
+
+document.getElementById('clear').addEventListener('click', () => {
+  annotationRoot.clear();
+  annotations.length = 0;
+  nodes.selection.textContent = 'Annotations cleared.';
+  record('clear_annotations');
+});
+document.getElementById('capture').addEventListener('click', () => {
+  void captureEvidence({slotId: 'manual', download: true}).catch(error => fail(error));
+});
+document.getElementById('trace').addEventListener('click', () => {
+  record('save_trace', {final_state: true});
+  const traceId = `${Date.now().toString(36)}-${operations.length}`;
+  const payload = {
+    protocol: protocolVersion,
+    schema_version: messageSchema,
+    artifact_schema_version: 'sciencevision.viewer_trace.v1',
+    task_id: taskId,
+    session_id: sessionId,
+    mode: viewerMode,
+    complete: true,
+    anonymous_labels: true,
+    operations,
+    captures,
+    state: bimState(),
+  };
+  const traceName = `${safeFilePart(taskId, 'bim')}-trace-${traceId}.json`;
+  downloadBlob(traceName, new Blob([`${JSON.stringify(payload, null, 2)}\n`], {type: 'application/json'}));
+});
+controls.addEventListener('start', () => {
+  if (activeCamera === perspective) currentView = 'custom';
+});
+controls.addEventListener('end', () => {
+  if (activeCamera === perspective) record('orbit_or_pan');
+});
+
+function trustedParentMessage(event) {
+  if (!parentWindow || event.source !== parentWindow || event.origin !== parentOrigin) return false;
+  const message = event.data;
+  return Boolean(
+    message && typeof message === 'object' &&
+    message.schema_version === messageSchema &&
+    message.task_id === taskId &&
+    message.session_id === sessionId &&
+    message.mode === viewerMode
+  );
+}
+
+window.addEventListener('message', event => {
+  if (!trustedParentMessage(event)) return;
+  const message = event.data;
+  if (message.type === 'snapshot.request') {
+    sendSnapshot('parent_request', message.request_id || null);
+  } else if (message.type === 'capture.request' && viewerReady) {
+    void captureEvidence({
+      slotId: message.slot_id || 'evidence',
+      requestId: message.request_id || null,
+      download: false,
+    }).catch(error => {
+      postViewerMessage('viewer.capture', {
+        request_id: message.request_id || null,
+        slot_id: message.slot_id || 'evidence',
+        complete: false,
+        error: String(error?.message || error),
+        snapshot: bimState(),
+      });
+    });
+  } else if (message.type === 'requirement.select') {
+    activeRequirementId = typeof message.requirement_id === 'string' && message.requirement_id ? message.requirement_id : null;
+    activeSemanticRole = typeof message.semantic_role === 'string' && message.semantic_role ? message.semantic_role : null;
+    record('select_requirement', {
+      requirement_id: activeRequirementId,
+      semantic_role: activeSemanticRole,
+      assigned: Boolean(activeRequirementId),
+    });
+  } else if (message.type === 'state.restore') {
+    restoreState(message.snapshot, message.request_id || null);
+  } else if (message.type === 'reveal_reference' && viewerMode === 'review') {
+    const snapshot = bimState();
+    postViewerMessage('viewer.reference_revealed', {
+      complete: true,
+      available: false,
+      revealed: false,
+      snapshot,
+    });
+  }
+});
+
+function fail(error) {
+  document.body.insertAdjacentHTML('beforeend', `<div class="error-box">Unable to open the anonymous BIM task.\n${String(error.message || error)}</div>`);
+  nodes.stats.textContent = 'load failed';
+}
+
+function animate() {
+  if (controls.enabled) controls.update();
+  renderer.render(scene, activeCamera);
+  requestAnimationFrame(animate);
+}
+
+window.addEventListener('resize', () => {
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight, false);
+  perspective.aspect = canvas.clientWidth / Math.max(canvas.clientHeight, 1);
+  perspective.updateProjectionMatrix();
+  setView(currentView, false);
+});
+window.addEventListener('beforeunload', () => {
+  for (const envelope of envelopes) {
+    envelope.geometry.dispose();
+    envelope.material.dispose();
+  }
+});
+
+load().then(() => {
+  viewerReady = true;
+  postViewerMessage('viewer.ready', {complete: true, snapshot: bimState()});
+}).catch(error => {
+  fail(error);
+  postViewerMessage('viewer.ready', {
+    complete: false,
+    error: String(error?.message || error),
+    snapshot: bimState(),
+  });
+});
+animate();
+</script>
+</body>
+</html>

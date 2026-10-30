@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block page_title %}Page not found · UniPat AI{% endblock %}
+
+{% block content %}
+<section class="lost" data-scene data-shape="dust" data-fx=".5">
+    <div class="wrap"><div class="col">
+        <span class="mono">404</span>
+        <h1 data-split>No pattern here.</h1>
+        <p class="lede">This page doesn't exist or has moved. Head back home, or browse the research.</p>
+        <div class="ctas">
+            <a class="btn btn-p" data-magnetic href="{{ url_for('landing') }}">Go to the homepage</a>
+            <a class="btn" data-magnetic href="{{ url_for('blog_list') }}">Read the blog</a>
+        </div>
+    </div></div>
+</section>
+{% endblock %}

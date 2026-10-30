@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="160" viewBox="0 0 320 160" role="img" aria-labelledby="rubric-tree-title rubric-tree-description">
+  <title id="rubric-tree-title">From criterion scores to a weighted task score</title>
+  <desc id="rubric-tree-description">An illustrative hierarchy, not a complete task rubric. Criterion scores between zero and one combine through requirement groups. The task score is the sum of leaf scores times effective hierarchical weights, which sum to one and reflect scientific importance. Branches and weights vary by task.</desc>
+  <g fill="none" stroke="#a6bdb0" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M160 50 V58 M80 78 V69 Q80 65 84 65 H236 Q240 65 240 69 V78 M160 58 V78"/>
+    <path d="M80 86 V91 M56 112 V101 Q56 97 60 97 H100 Q104 97 104 101 V112 M80 91 V97"/>
+    <path d="M160 86 V91 M144 112 V101 Q144 97 148 97 H172 Q176 97 176 101 V112 M160 91 V97"/>
+    <path d="M240 86 V91 M216 112 V101 Q216 97 220 97 H260 Q264 97 264 101 V112 M240 91 V97"/>
+  </g>
+  <rect x="96" y="8" width="128" height="42" rx="10" fill="#eef5f0" stroke="#d9e7de"/>
+  <g text-anchor="middle" font-family="system-ui, -apple-system, 'Segoe UI', sans-serif">
+    <text x="160" y="24" font-size="10" fill="#64816f">Task score</text>
+    <text x="160" y="42" font-size="16" font-weight="600" fill="#28674f">R = Σ wᵢsᵢ</text>
+    <text x="160" y="145" font-size="12" fill="#62756a">Evidence-backed criteria · 0–1</text>
+  </g>
+  <g fill="#fff" stroke="#6e9b83" stroke-width="1.5">
+    <circle cx="80" cy="82" r="5"/>
+    <circle cx="160" cy="82" r="5"/>
+    <circle cx="240" cy="82" r="5"/>
+  </g>
+  <g fill="#c4d9cd" stroke="#83a690" stroke-width="1">
+    <circle cx="56" cy="116" r="4"/>
+    <circle cx="104" cy="116" r="4"/>
+    <circle cx="144" cy="116" r="4"/>
+    <circle cx="176" cy="116" r="4"/>
+    <circle cx="216" cy="116" r="4"/>
+    <circle cx="264" cy="116" r="4"/>
+  </g>
+</svg>

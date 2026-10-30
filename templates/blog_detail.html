@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ post.title }} - UniPat AI{% endblock %}
+{% block meta_description %}{{ post.summary or post.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.summary or post.title }}{% endblock %}
+{% block og_image %}{% if post.header_image.startswith('http') %}{{ post.header_image }}{% else %}{{ request.host_url.rstrip('/') }}{{ post.header_image }}{% endif %}{% endblock %}
+
+{% block head_extra %}{% if preview_siblings %}<meta name="robots" content="noindex">{% endif %}{% endblock %}
+
+{% block content %}
+{% set layout = post.meta.get('layout') %}
+{% if preview_siblings %}
+<nav class="preview-switcher" aria-label="Preview versions">
+    <span>Preview</span>
+    {% for s in preview_siblings %}
+    <a href="{{ url_for('blog_preview', slug=s) }}" {% if s == post.slug %}class="active" aria-current="page"{% endif %}>{{ s.rsplit('-', 1)[1] | upper }}</a>
+    {% endfor %}
+</nav>
+{% endif %}
+
+{% if layout in ('feature', 'sciencevision') %}
+{# 自带 Hero 的整页版式：Markdown 内容自己负责标题区，这里只留一条短的夜空带 #}
+<section class="dhero compact" data-scene data-shape="image" data-src="{{ post.header_image }}" data-fx=".8" data-fy=".3" data-fs=".55">
+    <div class="wrap"><span class="mono crumb"><a href="{{ url_for('blog_list') }}">Blog</a><span>/</span>{% if post.date_str %}<span>{{ post.date_str }}</span>{% endif %}</span></div>
+</section>
+{% else %}
+<section class="dhero" data-scene data-shape="image" data-src="{{ post.header_image }}" data-fx=".76">
+    <div class="wrap"><div class="col">
+        <span class="mono crumb"><a href="{{ url_for('blog_list') }}">Blog</a>{% if post.date_str and post.meta.get('hidedate') != 'true' %}<span>/</span><span>{{ post.date_str }}</span>{% endif %}</span>
+        <h1 data-split>{{ post.title }}</h1>
+        {% if post.summary %}<p class="sum">{{ post.summary }}</p>{% endif %}
+        {% if layout == 'paperbenchx' %}
+        <div class="ctas">
+            <a class="btn btn-p" data-magnetic href="https://github.com/UniPat-AI/PaperBenchX" target="_blank" rel="noopener">GitHub</a>
+            <button class="btn" type="button" disabled>Paper <small>Coming soon</small></button>
+        </div>
+        {% endif %}
+        <div class="scroll"><i></i><span class="mono">Scroll to read</span></div>
+    </div></div>
+</section>
+{% endif %}
+
+<div class="paper" data-field-cover>
+    <div class="container">
+    {% if layout == 'paperbenchx' %}
+    <div class="pbx-article-layout">
+        <aside class="pbx-sidebar" aria-label="Article navigation">
+            <details class="pbx-reading-toc" id="pbx-reading-toc" open>
+                <summary><span>On This Page</span><span class="pbx-toc-chevron" aria-hidden="true">⌄</span></summary>
+                <div class="pbx-toc-body">
+                    <div class="pbx-toc-progress"><span>Reading progress</span><span id="pbx-reading-percent" aria-hidden="true">0%</span></div>
+                    <progress id="pbx-reading-progress" value="0" max="100" aria-label="Article reading progress">0%</progress>
+                    <nav aria-label="Article sections" id="pbx-toc-nav" tabindex="0"><ol>
+                        <li><a href="#overview" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">01</span><span>Overview</span></a></li>
+                        <li><a href="#why-paperbenchx" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">02</span><span>Why scientific reproduction?</span></a></li>
+                        <li><a href="#protocol" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">03</span><span>Inside a task</span></a></li>
+                        <li><a href="#construction" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">04</span><span>Task construction</span></a></li>
+                        <li><a href="#results" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">05</span><span>Leaderboard</span></a></li>
+                        <li><a href="#failure-modes" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">06</span><span>Analysis</span></a></li>
+                        <li><a href="#data-release" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">07</span><span>Data release</span></a></li>
+                        <li><a href="#open-release" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">08</span><span>Toward a general AI scientist</span></a></li>
+                        <li><a href="#contributors" class="pbx-toc-link"><span class="pbx-toc-number" aria-hidden="true">09</span><span>Contributors</span></a></li>
+                    </ol></nav>
+                </div>
+            </details>
+        </aside>
+        <article class="detail" id="pbx-article">
+            <div class="markdown">{{ post.html }}</div>
+            <div class="back-link"><a href="{{ url_for('blog_list') }}">← Back to Blog</a><a href="#main">Back to top ↑</a></div>
+        </article>
+    </div>
+    {% else %}
+    <article class="detail{% if layout == 'feature' %} detail-feature tex2jax_ignore{% endif %}">
+        <div class="markdown">{{ post.html }}</div>
+        <div class="back-link"><a href="{{ url_for('blog_list') }}">← Back to Blog</a><a href="#main">Back to top ↑</a></div>
+    </article>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}{% include "_mathjax.html" %}{% endblock %}

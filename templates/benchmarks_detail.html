@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ entry.title }} - UniPat AI{% endblock %}
+{% block meta_description %}{{ entry.summary or entry.title }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ entry.title }}{% endblock %}
+{% block og_description %}{{ entry.summary or entry.title }}{% endblock %}
+{% block og_image %}{% if entry.header_image.startswith('http') %}{{ entry.header_image }}{% else %}{{ request.host_url.rstrip('/') }}{{ entry.header_image }}{% endif %}{% endblock %}
+
+{% block content %}
+<section class="dhero" data-scene data-shape="image" data-src="{{ entry.header_image }}" data-fx=".76">
+    <div class="wrap"><div class="col">
+        <span class="mono crumb"><a href="{{ url_for('benchmarks_list') }}">Benchmarks</a>{% if entry.date_str %}<span>/</span><span>Updated {{ entry.date_str }}</span>{% endif %}</span>
+        <h1 data-split>{{ entry.title }}</h1>
+        {% if entry.summary %}<p class="sum">{{ entry.summary }}</p>{% endif %}
+        <div class="facts">
+            {% if entry.meta.get('domain') %}<div><span class="mono">Domain</span><b>{{ entry.meta.get('domain') }}</b></div>{% endif %}
+        </div>
+        <div class="scroll"><i></i><span class="mono">Scroll for results</span></div>
+    </div></div>
+</section>
+
+<div class="paper" data-field-cover>
+    <div class="container">
+        <article class="detail">
+            <div class="markdown">{{ entry.html }}</div>
+            <div class="back-link"><a href="{{ url_for('benchmarks_list') }}">← Back to Benchmarks</a><a href="#main">Back to top ↑</a></div>
+        </article>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}{% include "_mathjax.html" %}{% endblock %}

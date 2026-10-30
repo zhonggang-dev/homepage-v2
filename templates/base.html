@@ -1,0 +1,92 @@
+{% import "_brand.html" as brand %}
+{% set section = request.endpoint or '' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block page_title %}UniPat AI{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Our Mission is to Accelerate AI's Evolution Towards Real-World Automation.{% endblock %}">
+    <meta name="theme-color" content="#0a0b10">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:site_name" content="UniPat AI">
+    <meta property="og:title" content="{% block og_title %}UniPat AI{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}Our Mission is to Accelerate AI's Evolution Towards Real-World Automation.{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{{ request.host_url.rstrip('/') }}/static/images/common/og-default.png{% endblock %}">
+    <meta property="og:url" content="{{ request.url }}">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@UniPat_AI">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ static_cdn('favicon/favicon.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ static_cdn('favicon/favicon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ static_cdn('favicon/apple-touch-icon.png') }}">
+    <!-- Fonts are self-hosted in static/site/fonts (no Google Fonts dependency) -->
+    <link rel="preload" href="{{ static_cdn('site/fonts/schibsted-grotesk.woff2') }}" as="font" type="font/woff2" crossorigin>
+    <link rel="stylesheet" href="{{ static_cdn('site/site.css') }}">
+    {% block head_extra %}{% endblock %}
+
+    <!-- Google Analytics - Production Only -->
+    <script>
+    (function() {
+      var host = window.location.hostname;
+      if (host === 'unipat.ai' || host === 'www.unipat.ai') {
+        var script = document.createElement('script');
+        script.async = true;
+        script.src = 'https://www.googletagmanager.com/gtag/js?id=G-CSGZMTSPSD';
+        document.head.appendChild(script);
+
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-CSGZMTSPSD');
+      }
+    })();
+    </script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a class="skip" href="#main">Skip to content</a>
+<canvas id="field" aria-hidden="true" data-mark="{{ brand.mark_d }}"></canvas>
+
+<header class="site-header">
+    <div class="wrap">
+        <a href="{{ url_for('landing') }}" aria-label="UniPat AI home">{{ brand.full("logo") }}{{ brand.mark("logo-mark") }}</a>
+        <nav class="nav" aria-label="Main">
+            <a href="{{ url_for('blog_list') }}"{% if section.startswith('blog') %} aria-current="page"{% endif %}>Blog</a>
+            <a href="{{ url_for('benchmarks_list') }}"{% if section.startswith('benchmarks') %} aria-current="page"{% endif %}>Benchmarks</a>
+            <a href="{{ url_for('joinus') }}"{% if section == 'joinus' %} aria-current="page"{% endif %}>Join us</a>
+            <a class="x" href="https://x.com/UniPat_AI" target="_blank" rel="noopener noreferrer" aria-label="UniPat AI on X">{{ brand.x_icon() }}</a>
+        </nav>
+    </div>
+</header>
+
+{% block rail %}{% endblock %}
+
+<div class="page">
+<main id="main">
+{% block content %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="wrap">
+        <a href="{{ url_for('landing') }}" aria-label="UniPat AI home">{{ brand.full("logo") }}</a>
+        <nav aria-label="Footer">
+            <a href="{{ url_for('blog_list') }}">Blog</a>
+            <a href="{{ url_for('benchmarks_list') }}">Benchmarks</a>
+            <a href="{{ url_for('joinus') }}">Join us</a>
+            <a href="mailto:contact@unipat.ai">contact@unipat.ai</a>
+            <a class="x" href="https://x.com/UniPat_AI" target="_blank" rel="noopener noreferrer">{{ brand.x_icon() }} @UniPat_AI</a>
+        </nav>
+    </div>
+</footer>
+</div>
+
+<script src="{{ static_cdn('site/motion.js') }}"></script>
+<script src="{{ static_cdn('site/field.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

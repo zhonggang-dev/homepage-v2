@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block body_class %}home{% endblock %}
+
+{% block rail %}
+<nav class="scenes" aria-label="Sections">
+    <a href="#intro">Intro</a>
+    <a href="#benchmarks">Benchmarks</a>
+    <a href="#research">Research</a>
+    <a href="#join">Join us</a>
+</nav>
+{% endblock %}
+
+{% block content %}
+<section class="scene hero" id="intro" data-scene data-shape="mark">
+    <div class="wrap"><div class="col">
+        <span class="mono">UniPat /ˌjuːnɪˈpæt/ · Universe of Patterns</span>
+        <h1 data-split>Valuable knowledge assembled into <span class="soft">real-world intelligence.</span></h1>
+        <p>Our mission is to accelerate AI's evolution towards real-world automation. The next leap—from capable models to productive and trustworthy systems—comes from training AI in realistic scenarios.</p>
+        <div class="ctas">
+            <a class="btn btn-p" data-magnetic href="#benchmarks">Explore benchmarks</a>
+            <a class="btn" data-magnetic href="{{ url_for('joinus') }}">Join us</a>
+        </div>
+        <div class="scroll"><i></i><span class="mono">Scroll — the field re-forms</span></div>
+    </div></div>
+</section>
+
+<section class="scene" id="benchmarks" data-scene data-shape="sphere">
+    <div class="wrap"><div class="col">
+        <span class="mono">Benchmarks</span>
+        <h2 class="h">Tests built from <span>real work.</span></h2>
+        <p class="lede">Executable, expert-designed evaluations across coding, computer use, science, vision and prediction.</p>
+        <div class="blist" data-stagger>
+            {% for b in benchmarks %}
+            {% set href = b.meta.externalurl or url_for('benchmarks_detail', slug=b.slug) %}
+            <a class="brow" data-reveal href="{{ href }}"{% if b.meta.externalurl %} target="_blank" rel="noopener"{% endif %}>
+                <div class="h"><h3>{{ b.title }}</h3><span class="mono">{{ b.meta.domain }}</span></div>
+                <div class="more"><div><p>{{ b.summary }}</p></div></div>
+            </a>
+            {% endfor %}
+        </div>
+        <a class="link" href="{{ url_for('benchmarks_list') }}">All benchmarks →</a>
+    </div></div>
+</section>
+
+<section class="scene" id="research" data-scene data-shape="plane">
+    <div class="wrap"><div class="col">
+        <span class="mono">Blog</span>
+        <h2 class="h">Latest <span>research.</span></h2>
+        <p class="lede">Models, agents and evaluation methods from the UniPat team and collaborators.</p>
+        <div class="plist" data-stagger>
+            {% for p in posts %}
+            <a class="p" data-reveal href="{{ url_for('blog_detail', slug=p.slug) }}">
+                <div class="img"><img src="{{ p.header_image }}" alt="" loading="lazy"></div>
+                <div><span class="mono">{{ p.date.strftime('%b %d, %Y') }}</span><h3>{{ p.title }}</h3></div>
+            </a>
+            {% endfor %}
+        </div>
+        <a class="link" href="{{ url_for('blog_list') }}">Read the blog →</a>
+    </div></div>
+</section>
+
+<section class="scene" id="join" data-scene data-shape="ring">
+    <div class="wrap"><div class="col">
+        <span class="mono">Join us</span>
+        <h2 class="h">Shape what comes next with <span>UniPat AI.</span></h2>
+        <p class="lede">We're hiring across research, engineering, design and operations.</p>
+        <ul class="roles" data-stagger>
+            {% for r in roles %}<li data-reveal><a href="{{ url_for('joinus') }}#{{ r.title | slugify }}">{{ r.title }}</a></li>{% endfor %}
+        </ul>
+        <a class="mailbig" href="mailto:talents@unipat.ai">talents@unipat.ai</a>
+    </div></div>
+</section>
+{% endblock %}

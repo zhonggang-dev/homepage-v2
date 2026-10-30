@@ -1,0 +1,66 @@
+/* Design tokens carried over from the sibling PaperBenchX article page.
+   Names are section-scoped so this sheet can drop into the site alongside it. */
+
+:root {
+  --sv-green: #147d64;
+  --sv-green-deep: #28674f;
+  --sv-green-dark: #244d3f;
+  --sv-slate: #375d7a;
+  --sv-slate-light: #537f9d;
+
+  --sv-ink: #243b32;
+  --sv-ink-soft: #414854;
+  --sv-muted: #718078;
+  --sv-muted-strong: #64766b;
+  --sv-faint: #8b968f;
+
+  --sv-rule: #e1e8e4;
+  --sv-rule-soft: #dfe3e8;
+  --sv-rule-strong: #cbd0d8;
+
+  --sv-ground: #fafafa;
+  --sv-ground-warm: #f3f7f4;
+  --sv-ground-cool: #f1f5f2;
+
+  /* Series colours encode the model vendor: greyscale for OpenAI, orange for Anthropic.
+     Shade, not hue, separates two models from the same vendor. */
+  --sv-series-openai-a: #4f5a54;
+  --sv-series-openai-b: #9ba59e;
+  --sv-series-anthropic: #d97757;
+
+  /* Vendor colours, one per lab. OpenAI and Anthropic keep the series colours above, which
+     is how the release tables already draw them. The rest follow each lab's own mark:
+     Google Gemini's and ByteDance's are the published hexes in the icon set, Tencent's and
+     Z.ai's come from those sites, and the Qwen and DeepSeek marks carry their own. They are
+     not evenly spaced — six of the nine labs use a blue — so the vendor mark, not the
+     colour, is what identifies a column. */
+  --sv-vendor-google: #8e75b2;
+  --sv-vendor-alibaba: #6b5ce7;
+  --sv-vendor-deepseek: #4d6bfe;
+  --sv-vendor-moonshot: #16191f;
+  --sv-vendor-zhipu: #00b4d8;
+  --sv-vendor-bytedance: #3c8cff;
+  --sv-vendor-tencent: #0052d9;
+
+  /* Segment ramp for the coverage composition bars: green through slate to pale. */
+  --sv-seg-1: #147d64;
+  --sv-seg-2: #4a7f96;
+  --sv-seg-3: #6f8ba3;
+  --sv-seg-4: #9aa9b5;
+  --sv-seg-5: #c3ccd3;
+
+  --sv-mono: "Space Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --sv-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, sans-serif;
+  --sv-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+
+  /* One measure for every block: prose, notes, cards, charts and figures share these edges. */
+  --sv-measure: 780px;
+  --sv-sidebar: 224px;
+  --sv-header-height: 76px;
+  --sv-scroll-offset: calc(var(--sv-header-height) + 24px);
+  --sv-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --sv-frame-ms: 0; }
+}

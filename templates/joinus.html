@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block page_title %}Join Us · UniPat AI{% endblock %}
+{% block meta_description %}Shape what comes next with UniPat AI. Open positions in research, engineering, design, and operations. Apply at talents@unipat.ai.{% endblock %}
+{% block og_title %}Join Us · UniPat AI{% endblock %}
+{% block og_description %}Shape what comes next with UniPat AI. Open positions in research, engineering, design, and operations. Apply at talents@unipat.ai.{% endblock %}
+
+{% block content %}
+<section class="phero" data-scene data-shape="ring" data-fx=".72">
+    <div class="wrap"><div class="col">
+        <span class="mono">Join us</span>
+        <h1 data-split>Shape what comes next with <span class="soft">UniPat AI.</span></h1>
+        <p>We're building AI that does real work—trained in realistic scenarios, measured on real tasks. We're hiring across research, engineering, design and operations.</p>
+        <div class="ctas">
+            <a class="btn btn-p" data-magnetic href="#roles">See open roles</a>
+            <a class="btn" data-magnetic href="mailto:talents@unipat.ai">talents@unipat.ai</a>
+        </div>
+    </div></div>
+</section>
+
+<section class="section" id="roles" data-scene data-shape="sphere" data-fx=".5" data-fs="1.9" data-fa=".26">
+    <div class="wrap">
+        {% for team, items in teams %}
+        <div class="team" data-reveal>
+            <span class="mono">{{ team }}</span>
+            <ul>
+                {% for r in items %}
+                <li><a class="jrole" id="{{ r.title | slugify }}" href="mailto:talents@unipat.ai?subject={{ ('Application: ' ~ r.title) | urlencode }}"><b>{{ r.title }}</b><span>Apply by email ↗</span></a></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="scene" data-scene data-shape="mark">
+    <div class="wrap"><div class="col define" data-reveal>
+        <div class="word"><b>UniPat</b><i>/ˌjuːnɪˈpæt/</i></div>
+        <p><em>n.</em>Universe of Patterns — we believe valuable patterns make up the core of AI development and application.</p>
+        <p>Send your CV and anything you've built to</p>
+        <a class="mailbig" href="mailto:talents@unipat.ai">talents@unipat.ai</a>
+    </div></div>
+</section>
+{% endblock %}
