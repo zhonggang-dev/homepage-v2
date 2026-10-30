@@ -200,6 +200,9 @@ a:hover .img img, a:focus-visible .img img { filter: none; mix-blend-mode: norma
     position: relative; z-index: 2; background: var(--paper); color: var(--paper-ink); border-radius: 30px 30px 0 0; padding: 64px 0 110px; color-scheme: light; box-shadow: 0 -30px 80px rgba(10, 11, 16, .55); font-family: var(--sans); }
 .paper::before { content: ""; position: absolute; left: 30px; right: 30px; top: 0; height: 1px; background: linear-gradient(90deg, transparent, rgba(236, 217, 166, .9), rgba(194, 183, 238, .9), transparent); }
 .paper { --sv-header-height: 80px; }
+/* articles that paint their own ground: the paper takes that colour so no inner box shows */
+.paper:has(.sv-layout) { --paper: var(--sv-ground, #fafafa); }
+.paper:has(.pbx-hero) { --paper: var(--pbx-paper, #fff); }
 .paper .container { width: min(980px, 100% - 48px); margin: 0 auto; }
 :where(.paper) a { color: var(--text); }
 :where(.paper) a:hover { text-decoration: underline; text-underline-offset: 4px; }

@@ -21,8 +21,8 @@
 {% endif %}
 
 {% if layout in ('feature', 'sciencevision') %}
-{# 自带 Hero 的整页版式：Markdown 内容自己负责标题区，这里只留一条短的夜空带 #}
-<section class="dhero compact" data-scene data-shape="image" data-src="{{ post.header_image }}" data-fx=".8" data-fy=".3" data-fs=".55">
+{# 自带 Hero 的整页版式：Markdown 内容自己负责标题区（含封面），这里只留一条短的夜空带，粒子散成星尘 #}
+<section class="dhero compact" data-scene data-shape="dust" data-fx=".5" data-fy=".5" data-fs="2.4" data-fa=".7">
     <div class="wrap"><span class="mono crumb"><a href="{{ url_for('blog_list') }}">Blog</a><span>/</span>{% if post.date_str %}<span>{{ post.date_str }}</span>{% endif %}</span></div>
 </section>
 {% else %}
