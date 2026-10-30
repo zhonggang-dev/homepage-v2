@@ -5,7 +5,7 @@ HeaderImage: /static/sciencevision/assets/sciencevision-cover.jpg
 Layout: sciencevision
 
 <link rel="stylesheet" href="/static/sciencevision/styles/tokens.css?v=bb3701f1">
-<link rel="stylesheet" href="/static/sciencevision/styles/article.css?v=715e4e26">
+<link rel="stylesheet" href="/static/sciencevision/styles/article.css?v=1d36cf4b">
 <link rel="stylesheet" href="/static/sciencevision/styles/trajectory.css?v=b7672362">
 <link rel="stylesheet" href="/static/sciencevision/styles/components.css?v=a4a2c031">
 <link rel="stylesheet" href="/static/sciencevision/styles/viewer.css?v=1dceb7d6">

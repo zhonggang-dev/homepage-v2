@@ -225,9 +225,9 @@ html { scroll-behavior: smooth; }
   display: block;
   width: 100%;
   height: auto;
-  border: 1px solid var(--sv-rule);
-  border-radius: var(--sv-radius);
-  background: #fff;
+  /* the drawing carries its own rounded frame; multiply drops its white sheet into the ground */
+  mix-blend-mode: multiply;
+  filter: brightness(1.04) contrast(1.04);
 }
 
 /* ---------- stat strip ---------- */
@@ -239,7 +239,6 @@ html { scroll-behavior: smooth; }
   padding: 22px 0;
   border-top: 1px solid var(--sv-rule);
   border-bottom: 1px solid var(--sv-rule);
-  background: var(--sv-ground-warm);
 }
 
 .sv-stat {
